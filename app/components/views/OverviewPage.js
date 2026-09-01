@@ -33,12 +33,20 @@ export default function OverviewPage({
 
   const dim = new Date(year, month + 1, 0).getDate();
   const fw = new Date(year, month, 1).getDay();
-  const moodColor = { great: "#4ade80", good: "#60a5fa", okay: "#fbbf24", bad: "#fb923c", awful: "#f87171" };
+
 
   const dateMood = {};
   records.forEach((r) => {
     dateMood[r.date] = r.mood;
   });
+
+  const moodEmojiMap = {
+    great: "😸",
+    good: "😺",
+    okay: "😐",
+    bad: "😿",
+    awful: "😾",
+  };
 
   const periodDates = new Set();
   periodRecords.forEach((pr) => {
@@ -85,7 +93,7 @@ export default function OverviewPage({
           <div className="px-6 py-5 flex items-center justify-between border-b" style={{ background: darkMode ? "#191724" : "#FFF8ED", borderColor: borderCol }}>
             <button
               onClick={prev}
-              className="w-10 h-10 rounded-2xl border flex items-center justify-center transition hover:scale-105 font-bold text-lg"
+              className="w-10 h-10 rounded-2xl border flex items-center justify-center transition hover:scale-105 font-bold text-lg cursor-pointer"
               style={{ background: cardBg, borderColor: borderCol, color: textM }}
             >
               ‹
@@ -103,7 +111,7 @@ export default function OverviewPage({
             </div>
             <button
               onClick={next}
-              className="w-10 h-10 rounded-2xl border flex items-center justify-center transition hover:scale-105 font-bold text-lg"
+              className="w-10 h-10 rounded-2xl border flex items-center justify-center transition hover:scale-105 font-bold text-lg cursor-pointer"
               style={{ background: cardBg, borderColor: borderCol, color: textM }}
             >
               ›
@@ -135,38 +143,60 @@ export default function OverviewPage({
                     key={ds}
                     type="button"
                     onClick={() => setSelected(d)}
-                    className="relative aspect-square rounded-2xl flex flex-col items-center justify-center text-sm font-black transition-all hover:scale-105 border cursor-pointer"
+                    className="relative aspect-square rounded-2xl flex flex-col items-center justify-between p-1.5 transition-all hover:scale-105 border cursor-pointer overflow-hidden"
                     style={{
-                      background: isSel ? theme.accent : mood ? moodColor[mood] + "25" : darkMode ? "#191724" : "#FFF8ED",
+                      background: isSel ? theme.accent : mood ? (darkMode ? "rgba(246,214,155,0.08)" : "#FFFBEB") : darkMode ? "#191724" : "#FFF8ED",
                       borderColor: isToday ? theme.accent : isSel ? theme.accent : borderCol + "60",
-                      color: isSel ? "#191724" : mood ? textM : textS,
+                      color: isSel ? "#191724" : textM,
                       boxShadow: isSel ? `0 6px 16px ${theme.accent}50` : "none",
                     }}
                   >
-                    <span>{d}</span>
-                    <div className="flex gap-1 mt-0.5 items-center">
-                      {mood && <span className="w-2 h-2 rounded-full" style={{ background: moodColor[mood] }} />}
-                      {isPeriod && <span style={{ fontSize: "10px", lineHeight: 1 }}>🩸</span>}
+                    <span className={`text-xs font-black ${isToday ? "text-amber-400 font-extrabold" : ""}`}>{d}</span>
+                    <div className="flex items-center justify-center gap-1 my-auto">
+                      {mood && <span className="text-xl leading-none">{moodEmojiMap[mood] || "😐"}</span>}
+                      {isPeriod && <span className="text-base leading-none">🩸</span>}
                     </div>
                   </button>
                 );
               })}
             </div>
 
-            {/* Legend Footer */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-5 pt-4 border-t" style={{ borderColor: borderCol + "40" }}>
-              <span className="text-xs font-black" style={{ color: textS }}>
+            {/* Legend Footer (No colored dots, enlarged emojis) */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-5 pt-4 border-t" style={{ borderColor: borderCol + "40" }}>
+              <span className="text-xs font-black mr-1" style={{ color: textS }}>
                 อารมณ์:
               </span>
-              {[["great", "😄"], ["good", "😊"], ["okay", "😐"], ["bad", "😢"], ["awful", "😭"]].map(([m, e]) => (
-                <span key={m} className="flex items-center gap-1 text-xs font-bold" style={{ color: textS }}>
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: moodColor[m] }} />
-                  {e}
+              {[
+                ["great", "😸", "สดใสมาก"],
+                ["good", "😺", "อารมณ์ดี"],
+                ["okay", "😐", "เฉยๆ"],
+                ["bad", "😿", "ไม่ค่อยดี"],
+                ["awful", "😾", "แย่จัง"],
+              ].map(([m, e, label]) => (
+                <span
+                  key={m}
+                  className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-xl border"
+                  style={{
+                    background: darkMode ? "#191724" : "#FFF8ED",
+                    borderColor: borderCol + "50",
+                    color: textM,
+                  }}
+                >
+                  <span className="text-base">{e}</span>
+                  <span className="text-[11px]" style={{ color: textS }}>{label}</span>
                 </span>
               ))}
-              {showPeriodFeature && periodDates.size > 0 && (
-                <span className="flex items-center gap-1 text-xs font-bold" style={{ color: textS }}>
-                  🩸 ประจำเดือน
+              {showPeriodFeature && (
+                <span
+                  className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-xl border"
+                  style={{
+                    background: "rgba(244,63,94,0.1)",
+                    borderColor: "rgba(244,63,94,0.3)",
+                    color: "#F43F5E",
+                  }}
+                >
+                  <span className="text-base">🩸</span>
+                  <span className="text-[11px]">ประจำเดือน</span>
                 </span>
               )}
             </div>
