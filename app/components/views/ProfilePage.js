@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import MoodBadge from "../MoodBadge";
 import CatMascot from "../CatMascot";
+import AppLogo from "../AppLogo";
 import { CAT_FRIENDSHIP_LEVELS } from "../constants";
 
 export default function ProfilePage({
@@ -20,6 +21,7 @@ export default function ProfilePage({
   setShowBmiFeature,
 }) {
   const [patCount, setPatCount] = useState(0);
+  const [selectedPose, setSelectedPose] = useState("holding-tracker");
 
   useEffect(() => {
     const saved = localStorage.getItem("kuro-pat-count");
@@ -256,6 +258,124 @@ export default function ProfilePage({
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Mascot & Logo Official Showcase Card */}
+      <div className="rounded-[28px] p-6 shadow-xl border space-y-6" style={{ background: cardBg, borderColor: borderCol }}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4" style={{ borderColor: borderCol + "50" }}>
+          <div>
+            <h4 className="font-black text-lg flex items-center gap-2" style={{ color: textM }}>
+              <span className="w-9 h-9 rounded-2xl flex items-center justify-center text-base border" style={{ background: darkMode ? "#191724" : "#FFE6C2", borderColor: borderCol }}>
+                🎨
+              </span>
+              มาสคอต และ โลโก้ของระบบ (System Design & Mascot) 🐾
+            </h4>
+            <p className="text-xs font-medium mt-1" style={{ color: textS }}>
+              เอกลักษณ์แมวดำหูเขียวพาสเทล <strong style={{ color: theme.accent }}>Kuro-chan</strong> & โลโก้แบรนด์ HealthTrack
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border shrink-0" style={{ background: "#A5DB7425", borderColor: "#A5DB74", color: "#3D683A" }}>
+            <span>🌿 Primary Accent: #A5DB74</span>
+          </div>
+        </div>
+
+        {/* 1. Official Logos Section */}
+        <div>
+          <h5 className="font-black text-sm mb-3 flex items-center gap-1.5" style={{ color: textM }}>
+            <span>🏷️</span> โลโก้ทางการของระบบ (Official HealthTrack Logos)
+          </h5>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Logo Variant 1: Sticker Logo */}
+            <div className="p-4 rounded-2xl border flex flex-col items-center justify-center gap-3 text-center transition-all hover:scale-102" style={{ background: darkMode ? "#191724" : "#FFF8ED", borderColor: borderCol }}>
+              <AppLogo size={240} variant="sticker" />
+              <div>
+                <div className="text-xs font-black" style={{ color: textM }}>Sticker Header Logo</div>
+                <div className="text-[11px] font-medium opacity-75" style={{ color: textS }}>โลโก้สติ๊กเกอร์ พร้อมแมวกอดแทร็กเกอร์และเมฆปฏิทิน</div>
+              </div>
+            </div>
+
+            {/* Logo Variant 2: Badge Stamp Logo */}
+            <div className="p-4 rounded-2xl border flex flex-col items-center justify-center gap-3 text-center transition-all hover:scale-102" style={{ background: darkMode ? "#191724" : "#FFF8ED", borderColor: borderCol }}>
+              <AppLogo size={140} variant="badge" />
+              <div>
+                <div className="text-xs font-black" style={{ color: textM }}>Emblem Badge Logo</div>
+                <div className="text-[11px] font-medium opacity-75" style={{ color: textS }}>ตราสัญลักษณ์วงกลม Personal Well-being Tracker</div>
+              </div>
+            </div>
+
+            {/* Logo Variant 3: App Icon */}
+            <div className="p-4 rounded-2xl border flex flex-col items-center justify-center gap-3 text-center transition-all hover:scale-102" style={{ background: darkMode ? "#191724" : "#FFF8ED", borderColor: borderCol }}>
+              <AppLogo size={100} variant="compact" />
+              <div>
+                <div className="text-xs font-black" style={{ color: textM }}>App Icon & Favicon</div>
+                <div className="text-[11px] font-medium opacity-75" style={{ color: textS }}>ไอคอนปุ่มเมนูและแอปพลิเคชัน</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Mascot Expression Sheet Section */}
+        <div className="pt-2">
+          <div className="flex items-center justify-between mb-3">
+            <h5 className="font-black text-sm flex items-center gap-1.5" style={{ color: textM }}>
+              <span>🐱</span> คอลเลกชันท่าทางมาสคอต (Kuro Mascot Expression Sheet)
+            </h5>
+            <span className="text-xs font-bold" style={{ color: theme.accent }}>
+              (คลิกเพื่อพรีวิวท่าทาง)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { id: "holding-tracker", name: "กอดแทร็กเกอร์", desc: "ท่าหลักโลโก้ ถือหลอดสุขภาพ" },
+              { id: "winking", name: "ขยิบตา 1 ข้าง", desc: "ท่าประจำตราสัญลักษณ์" },
+              { id: "sitting", name: "นั่งน่ารัก", desc: "ท่าพักผ่อน หูเขียวพาสเทล" },
+              { id: "cheering", name: "ดีใจ / ชูมือ", desc: "ท่ายินดีเมื่อทำเป้าหมายสำเร็จ" },
+              { id: "sleeping", name: "นอนหลับสนิท", desc: "ท่าสำหรับการนอนหลับพักผ่อน" },
+              { id: "stretching", name: "บิดตัวยืดบิด", desc: "ท่าออกกำลังกายและผ่อนคลาย" },
+              { id: "peeking", name: "แอบมองน่ารัก", desc: "ท่าแอบดูข้างการ์ด" },
+              { id: "curious", name: "สงสัย (?)", desc: "ท่าสงสัยถามไถ่สุขภาพ" },
+            ].map((p) => {
+              const active = selectedPose === p.id;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setSelectedPose(p.id)}
+                  className={`p-3 rounded-2xl border flex flex-col items-center text-center transition-all ${
+                    active ? "scale-105 shadow-md" : "hover:scale-102 opacity-80"
+                  }`}
+                  style={{
+                    background: active ? (darkMode ? "#252238" : "#FFFBEB") : (darkMode ? "#191724" : "#FFF8ED"),
+                    borderColor: active ? theme.accent : borderCol + "60",
+                  }}
+                >
+                  <CatMascot size={70} pose={p.id} interactive={false} />
+                  <div className="text-xs font-black mt-2" style={{ color: active ? theme.accent : textM }}>
+                    {p.name}
+                  </div>
+                  <div className="text-[10px] font-medium opacity-75" style={{ color: textS }}>
+                    {p.desc}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active Preview Banner */}
+          <div className="mt-4 p-4 rounded-2xl border flex items-center justify-between" style={{ background: darkMode ? "#191724" : "#FFFBEB", borderColor: theme.accent + "50" }}>
+            <div className="flex items-center gap-4">
+              <CatMascot size={80} pose={selectedPose} interactive={true} speechBubble="เมี๊ยว! ขอบคุณที่ดูแลสุขภาพนะ 💚" />
+              <div>
+                <div className="text-sm font-black" style={{ color: textM }}>
+                  ท่าทางที่เลือก: <span style={{ color: theme.accent }}>{selectedPose}</span>
+                </div>
+                <div className="text-xs font-medium opacity-80" style={{ color: textS }}>
+                  ลองคลิกที่ตัวน้อง Kuro เพื่อลูบหัวสะสมแต้มทาสแมวได้เลย meow~! 🐾
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
