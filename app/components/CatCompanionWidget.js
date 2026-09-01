@@ -13,6 +13,20 @@ export default function CatCompanionWidget({ user, theme, darkMode }) {
   useEffect(() => {
     const saved = localStorage.getItem("kuro-pat-count");
     if (saved) setPatCount(parseInt(saved, 10) || 0);
+
+    const handleUpdatedPat = (e) => {
+      const cnt = e?.detail?.count || parseInt(localStorage.getItem("kuro-pat-count") || "0", 10);
+      setPatCount(cnt);
+      setPose("cheering");
+      setShowPurr(true);
+      setTimeout(() => {
+        setPose("sitting");
+        setShowPurr(false);
+      }, 2500);
+    };
+
+    window.addEventListener("kuro-pat-updated", handleUpdatedPat);
+    return () => window.removeEventListener("kuro-pat-updated", handleUpdatedPat);
   }, []);
 
   const handlePat = () => {
