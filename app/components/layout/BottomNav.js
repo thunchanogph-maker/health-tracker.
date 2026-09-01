@@ -50,15 +50,15 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
   ];
 
   const navbarBg = theme?.accent || "#8B5CF6";
-  const canvasBg = darkMode ? "#252238" : "#FFFFFF";
+  const canvasBg = darkMode ? "#191724" : "#FFFFFF";
   const inactiveTextColor = "#FFFFFF";
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-stretch h-16 px-1 select-none overflow-visible shadow-2xl"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-end h-16 px-2 select-none overflow-visible shadow-2xl"
       style={{
         background: navbarBg,
-        boxShadow: "0 -6px 25px rgba(0,0,0,0.15)",
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.15)",
         "--canvas-bg": canvasBg,
         "--theme-accent": navbarBg,
       }}
@@ -69,8 +69,8 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center justify-center gap-1 py-2 px-3.5 transition-all cursor-pointer ${
-              active ? "bottom-nav-tab-active" : "hover:bg-white/10 rounded-t-2xl"
+            className={`flex flex-col items-center justify-center gap-1 px-3.5 transition-all cursor-pointer ${
+              active ? "bottom-nav-tab-active" : "hover:bg-white/10 rounded-t-xl py-2"
             }`}
             style={{
               background: active ? canvasBg : "transparent",
