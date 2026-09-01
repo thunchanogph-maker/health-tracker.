@@ -43,7 +43,7 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
       label: "โปรไฟล์",
       icon: (
         <svg className="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
         </svg>
       ),
     },
@@ -55,7 +55,7 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-end h-16 px-2 select-none overflow-visible"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-stretch h-16 px-1 select-none overflow-visible shadow-2xl"
       style={{
         background: navbarBg,
         boxShadow: "0 -6px 25px rgba(0,0,0,0.15)",
@@ -69,31 +69,18 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className="flex flex-col items-center justify-end pb-1.5 transition-all cursor-pointer relative"
-            style={{ width: "60px" }}
+            className={`flex flex-col items-center justify-center gap-1 py-2 px-3.5 transition-all cursor-pointer ${
+              active ? "bottom-nav-tab-active" : "hover:bg-white/10 rounded-t-2xl"
+            }`}
+            style={{
+              background: active ? canvasBg : "transparent",
+              color: active ? navbarBg : inactiveTextColor,
+            }}
           >
-            {active ? (
-              <div className="flex flex-col items-center">
-                {/* Teardrop Circle Bubble popping out of navbar (Matching Image 3) */}
-                <div className="bottom-nav-bubble-active">
-                  <div className="bottom-nav-icon-badge">
-                    {item.icon}
-                  </div>
-                </div>
-                <span className="text-[11px] font-black tracking-tight text-white -mt-3.5">
-                  {item.label}
-                </span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-0.5 hover:opacity-80 transition">
-                <span className="flex items-center justify-center shrink-0" style={{ color: inactiveTextColor }}>
-                  {item.icon}
-                </span>
-                <span className="text-[11px] font-black tracking-tight" style={{ color: inactiveTextColor }}>
-                  {item.label}
-                </span>
-              </div>
-            )}
+            <span className="flex items-center justify-center shrink-0" style={{ color: active ? navbarBg : inactiveTextColor }}>
+              {item.icon}
+            </span>
+            <span className="text-[11px] font-black tracking-tight">{item.label}</span>
           </button>
         );
       })}
