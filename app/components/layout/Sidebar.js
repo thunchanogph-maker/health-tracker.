@@ -7,131 +7,43 @@ export default function Sidebar({ activeTab, setActiveTab, darkMode, theme, user
   const nav = [
     { id: "overview", icon: "🏠", label: "ภาพรวม" },
     { id: "form", icon: "✏️", label: "บันทึก" },
-    { id: "list", icon: "📋", label: "รายการ" },
+    { id: "list", icon: "📋", label: "รายงาน" },
     { id: "chart", icon: "📊", label: "วิเคราะห์" },
-    { id: "profile", icon: "🐾", label: "โปรไฟล์ & แมว" },
+    { id: "profile", icon: "👤", label: "โปรไฟล์" },
   ];
 
-  const bg = darkMode ? "#191724" : "#FFF8ED";
-  const borderCol = darkMode ? "#3D3759" : "#F6D69B";
-  const textS = darkMode ? "#B2ACCD" : "#64748B";
-  const textM = darkMode ? "#F8F6FE" : "#1E293B";
-  const displayName = localUser?.displayName || user?.displayName || "มนุษย์";
-  const photoURL = localUser?.photoURL || user?.photoURL || null;
-
   return (
-    <aside
-      className="hidden md:flex flex-col min-h-screen py-6 shrink-0 transition-all duration-300 relative z-20"
-      style={{
-        width: collapsed ? "68px" : "260px",
-        background: bg,
-        borderRight: `1px solid ${borderCol}`,
-        boxShadow: "4px 0 24px rgba(0,0,0,0.06)",
-      }}
-    >
-      <div className={`flex items-center mb-6 ${collapsed ? "justify-center px-2" : "justify-between px-5"}`}>
-        {!collapsed && (
-          <div className="flex items-center gap-3 overflow-hidden">
-            <AppLogo size={38} className="shrink-0" />
-            <div>
-              <div className="font-black text-base whitespace-nowrap tracking-tight" style={{ color: textM }}>
-                Health<span style={{ color: theme.accent }}>Track</span>
-              </div>
-              <div className="text-xs whitespace-nowrap font-bold" style={{ color: theme.accent }}>
-                x Kuro Neko 🐾
-              </div>
-            </div>
-          </div>
-        )}
-        {collapsed && <AppLogo size={34} />}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="w-7 h-7 rounded-xl flex items-center justify-center text-xs hover:opacity-80 shrink-0 transition"
-          style={{ background: darkMode ? "#252238" : "#FFE6C2", color: textM, border: `1px solid ${borderCol}` }}
-        >
-          {collapsed ? "▶" : "◀"}
-        </button>
+    <aside className="flex flex-col h-full py-6 pr-0 shrink-0 select-none z-20 w-60">
+      {/* Official HealthTrack Logo Banner (Matching Image 3 Top Left) */}
+      <div className="px-5 mb-8 flex flex-col items-center justify-center">
+        <AppLogo size={150} variant="sticker" />
       </div>
 
-      {user && !collapsed && (
-        <button
-          onClick={() => setActiveTab("profile")}
-          className="rounded-2xl p-3 mb-5 mx-3 flex items-center gap-3 transition-all hover:scale-102 border"
-          style={{
-            background: activeTab === "profile" ? theme.accent : darkMode ? "#252238" : "#FFFFFF",
-            borderColor: borderCol,
-            color: activeTab === "profile" ? "#191724" : textM,
-          }}
-        >
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 overflow-hidden border-2"
-            style={{ borderColor: activeTab === "profile" ? "#191724" : theme.accent, background: theme.accent, color: "#191724" }}
-          >
-            {photoURL ? <img src={photoURL} alt="" className="w-full h-full object-cover" /> : displayName[0].toUpperCase()}
-          </div>
-          <div className="overflow-hidden text-left">
-            <div className="text-sm font-black truncate">{displayName}</div>
-            <div className="text-xs truncate font-medium opacity-80">{user.email || "มนุษย์ทาสแมว 🐾"}</div>
-          </div>
-        </button>
-      )}
-
-      {user && collapsed && (
-        <div className="flex justify-center mb-5">
-          <button
-            onClick={() => setActiveTab("profile")}
-            className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm text-white overflow-hidden border"
-            style={{ borderColor: borderCol, background: theme.accent }}
-          >
-            {photoURL ? <img src={photoURL} alt="" className="w-full h-full object-cover" /> : displayName[0].toUpperCase()}
-          </button>
-        </div>
-      )}
-
-      {!collapsed && (
-        <div className="text-xs font-black uppercase tracking-widest mb-2 px-5" style={{ color: textS }}>
-          เมนูหลัก meow~
-        </div>
-      )}
-
-      <nav className="flex flex-col gap-1.5 flex-1 px-3">
+      {/* Navigation List with Inverted Curve Active Tabs */}
+      <nav className="flex flex-col gap-2 flex-1 pl-4">
         {nav.map((item) => {
           const active = activeTab === item.id;
           return (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 py-3 rounded-2xl text-sm font-bold transition-all duration-200 text-left w-full border ${
-                collapsed ? "justify-center" : "px-3.5"
+              className={`flex items-center gap-3.5 py-3.5 px-5 font-black text-sm transition-all duration-200 text-left w-full cursor-pointer ${
+                active ? "sidebar-tab-active" : "text-white/80 hover:text-white hover:bg-white/10 rounded-2xl"
               }`}
-              style={{
-                background: active ? theme.accent : "transparent",
-                borderColor: active ? theme.accent : "transparent",
-                color: active ? "#191724" : textS,
-                boxShadow: active ? `0 6px 18px ${theme.accent}40` : "none",
-              }}
-              title={collapsed ? item.label : undefined}
             >
-              <span className="text-lg shrink-0">{item.icon}</span>
-              {!collapsed && (
-                <>
-                  <span className="font-extrabold">{item.label}</span>
-                  {active && <span className="ml-auto text-xs">🐾</span>}
-                </>
-              )}
+              <span className={`text-xl shrink-0 ${active ? "text-purple-600" : "text-white"}`}>{item.icon}</span>
+              <span className="tracking-tight text-base">{item.label}</span>
             </button>
           );
         })}
       </nav>
 
-      {/* Mini Kuro Mascot Widget in Sidebar */}
-      {!collapsed && (
-        <div className="mx-3 mt-auto p-3 rounded-2xl text-center border" style={{ background: darkMode ? "#252238" : "#FFFBEB", borderColor: borderCol }}>
-          <CatMascot size={60} pose="peeking" interactive={true} />
-          <div className="text-xs font-black mt-1" style={{ color: textM }}>Kuro-chan</div>
-          <div className="text-[11px] font-medium" style={{ color: textS }}>สุขภาพดี ยิ้มรับวันใหม่ 😸</div>
-        </div>
-      )}
+      {/* Mini Kuro Mascot Widget at Sidebar Bottom */}
+      <div className="mx-4 mt-auto p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center text-white">
+        <CatMascot size={64} pose="sitting" interactive={true} />
+        <div className="text-xs font-black mt-1">Kuro-chan 🐾</div>
+        <div className="text-[10px] font-medium opacity-80">HealthTrack Companion</div>
+      </div>
     </aside>
   );
 }

@@ -2,84 +2,47 @@
 
 import AppLogo from "../AppLogo";
 import AuthDialog from "../../pages/AuthDialog";
-import CatMascot from "../CatMascot";
 
 export default function Header({ darkMode, theme, user, setUser, setRecords, onSettingsOpen, localUser }) {
-  const bg = darkMode ? "rgba(25, 23, 36, 0.92)" : "rgba(255, 248, 237, 0.92)";
-  const borderCol = darkMode ? "#3D3759" : "#F6D69B";
-  const textM = darkMode ? "#F8F6FE" : "#1E293B";
+  const displayName = localUser?.displayName || user?.displayName || "Thunchanog Phonsit";
+  const photoURL = localUser?.photoURL || user?.photoURL || null;
 
   return (
-    <header
-      className="sticky top-0 z-30 flex items-center justify-between px-4 md:px-6 h-16 transition-all"
-      style={{
-        background: bg,
-        backdropFilter: "blur(16px)",
-        borderBottom: `1px solid ${borderCol}`,
-        boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-      }}
-    >
-      <div className="md:hidden flex items-center gap-2">
-        <AppLogo size={32} />
-        <span className="font-black text-base tracking-tight" style={{ color: textM }}>
-          Health<span style={{ color: theme.accent }}>Track</span>
-        </span>
-      </div>
+    <header className="flex items-center justify-end px-6 py-4 gap-4 select-none">
+      {/* Settings Gear Button (Image 3 Style) */}
+      <button
+        onClick={onSettingsOpen}
+        className="w-11 h-11 rounded-full flex items-center justify-center text-xl bg-white text-purple-600 shadow-md hover:scale-105 active:scale-95 transition cursor-pointer border border-purple-100"
+        title="ตั้งค่า"
+      >
+        ⚙️
+      </button>
 
-      <div className="hidden md:flex items-center gap-2">
-        <div
-          className="px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5"
-          style={{
-            background: darkMode ? "#252238" : "#FFFBEB",
-            borderColor: borderCol,
-            color: theme.accent,
-          }}
-        >
-          <CatMascot size={22} pose="sitting" interactive={false} />
-          <span>Kuro Mascot Active 🐾</span>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2.5">
-        <button
-          onClick={onSettingsOpen}
-          className="flex w-9 h-9 rounded-2xl items-center justify-center text-base transition-all hover:scale-105 active:scale-95 shadow-sm"
-          style={{
-            background: darkMode ? "#252238" : "#FFFFFF",
-            border: `1px solid ${borderCol}`,
-            color: textM,
-          }}
-          title="ตั้งค่าธีม & แอป"
-        >
-          ⚙️
-        </button>
-
-        {user && (
-          <div className="flex items-center gap-2">
-            <div
-              className="w-9 h-9 rounded-full overflow-hidden border-2 shrink-0 flex items-center justify-center font-black text-sm shadow-sm relative group"
-              style={{ borderColor: theme.accent, background: theme.accent, color: "#191724" }}
-            >
-              {localUser?.photoURL || user?.photoURL ? (
-                <img src={localUser?.photoURL || user?.photoURL} alt="" className="w-full h-full object-cover" />
-              ) : (
-                (localUser?.displayName || user?.displayName || "U")[0].toUpperCase()
-              )}
-            </div>
+      {/* User Profile Pill (Image 3 Style) */}
+      {user ? (
+        <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white text-slate-900 shadow-md border border-purple-100">
+          <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-black text-xs overflow-hidden shrink-0">
+            {photoURL ? (
+              <img src={photoURL} alt="" className="w-full h-full object-cover" />
+            ) : (
+              (displayName || "U")[0].toUpperCase()
+            )}
           </div>
-        )}
-
+          <span className="font-extrabold text-sm tracking-tight text-slate-900">
+            {displayName}
+          </span>
+        </div>
+      ) : (
         <AuthDialog
           onLogin={(u) => {
             setUser(u);
             if (!u) setRecords([]);
           }}
           customClass="flex items-center"
-          accentColor={theme.accent}
+          accentColor="#8B5CF6"
           darkMode={darkMode}
-          hideTriggerWhenLoggedOut={true}
         />
-      </div>
+      )}
     </header>
   );
 }
