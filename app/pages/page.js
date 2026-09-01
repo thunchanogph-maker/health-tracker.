@@ -25,7 +25,7 @@ export default function HealthPage() {
   const [periodRecords, setPeriodRecords] = useState([]);
   const [bmiRecord, setBmiRecord] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [theme, setTheme] = useState(THEMES[0]);
   const [showSettings, setShowSettings] = useState(false);
   const [showPeriod, setShowPeriod] = useState(false);
@@ -73,8 +73,8 @@ export default function HealthPage() {
     const t = localStorage.getItem("htrack-theme");
     const p = localStorage.getItem("htrack-period");
     const b = localStorage.getItem("htrack-bmi");
-    if (d === "1") setDarkMode(true);
-    else setDarkMode(false);
+    if (d === "0") setDarkMode(false);
+    else setDarkMode(true);
 
     if (t) {
       const found = THEMES.find((x) => x.name === t);
@@ -97,6 +97,8 @@ export default function HealthPage() {
     localStorage.setItem("htrack-bmi", showBmiFeature ? "1" : "0");
   }, [showBmiFeature]);
 
+  const bg = darkMode ? "#191724" : "#FFF8ED";
+
   const openAuth = (view) => {
     setAuthView(view);
     setAuthKey((k) => k + 1);
@@ -106,7 +108,7 @@ export default function HealthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F5FF] text-slate-900 p-2 sm:p-5 flex flex-col justify-between select-none">
+    <div className="flex min-h-screen transition-all" style={{ background: bg }}>
       {showSettings && (
         <SettingsModal darkMode={darkMode} setDarkMode={setDarkMode} theme={theme} setTheme={setTheme} onClose={() => setShowSettings(false)} />
       )}
@@ -128,7 +130,7 @@ export default function HealthPage() {
             if (!u) setRecords([]);
           }}
           customClass="absolute bottom-0 right-0 pointer-events-auto"
-          accentColor="#8B5CF6"
+          accentColor={theme.accent}
           darkMode={darkMode}
           defaultView={authView}
           autoOpen={authKey > 0}
@@ -136,66 +138,62 @@ export default function HealthPage() {
         />
       </div>
 
-      {!user ? (
-        <div className="max-w-5xl mx-auto w-full my-auto">
-          <WelcomePage darkMode={darkMode} theme={theme} onSignIn={() => openAuth("login")} onRegister={() => openAuth("register")} />
-        </div>
-      ) : (
-        /* Outer Purple Container Dashboard Frame (Matching Image 3 Mockup) */
-        <div className="max-w-[1380px] w-full mx-auto rounded-[36px] bg-[#8B5CF6] p-2 sm:p-4 shadow-2xl flex flex-col md:flex-row border-4 border-purple-300/40 relative overflow-hidden min-h-[850px]">
-          {/* Left Sidebar */}
-          <Sidebar
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            darkMode={darkMode}
-            theme={theme}
-            user={user}
-            localUser={localUser}
-            onSettingsOpen={() => setShowSettings(true)}
-            collapsed={sidebarCollapsed}
-            setCollapsed={setSidebarCollapsed}
-          />
-
-          {/* Right Main Column (Header top right + Inner White Canvas) */}
-          <div className="flex flex-col flex-1 min-w-0">
-            <Header
-              darkMode={darkMode}
-              theme={theme}
-              user={user}
-              setUser={setUser}
-              setRecords={setRecords}
-              onSettingsOpen={() => setShowSettings(true)}
-              localUser={localUser}
-            />
-
-            <main className="flex-1 pb-20 md:pb-4">
-              <Dashboard
-                user={user}
-                localUser={localUser}
-                records={records}
-                periodRecords={periodRecords}
-                bmiRecord={bmiRecord}
-                darkMode={darkMode}
-                theme={theme}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                onOpenPeriod={() => setShowPeriod(true)}
-                onOpenBmi={() => setShowBmi(true)}
-                onEditProfile={() => setShowEditProfile(true)}
-                showPeriodFeature={showPeriodFeature}
-                setShowPeriodFeature={setShowPeriodFeature}
-                showBmiFeature={showBmiFeature}
-                setShowBmiFeature={setShowBmiFeature}
-              />
-            </main>
-          </div>
-        </div>
+      {user && (
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          darkMode={darkMode}
+          theme={theme}
+          user={user}
+          localUser={localUser}
+          onSettingsOpen={() => setShowSettings(true)}
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
       )}
 
-      {/* Footer */}
-      <footer className="hidden md:block text-center py-2 text-xs font-semibold text-purple-700 opacity-60">
-        🌿 HealthTrack — Personal Well-being Tracker
-      </footer>
+      <div className="flex flex-col flex-1 min-w-0">
+        <Header
+          darkMode={darkMode}
+          theme={theme}
+          user={user}
+          setUser={setUser}
+          setRecords={setRecords}
+          onSettingsOpen={() => setShowSettings(true)}
+          localUser={localUser}
+        />
+
+        <main className="flex-1 px-4 md:px-6 py-5 pb-24 md:pb-8 max-w-6xl w-full mx-auto">
+          {!user ? (
+            <WelcomePage darkMode={darkMode} theme={theme} onSignIn={() => openAuth("login")} onRegister={() => openAuth("register")} />
+          ) : (
+            <Dashboard
+              user={user}
+              localUser={localUser}
+              records={records}
+              periodRecords={periodRecords}
+              bmiRecord={bmiRecord}
+              darkMode={darkMode}
+              theme={theme}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onOpenPeriod={() => setShowPeriod(true)}
+              onOpenBmi={() => setShowBmi(true)}
+              onEditProfile={() => setShowEditProfile(true)}
+              showPeriodFeature={showPeriodFeature}
+              setShowPeriodFeature={setShowPeriodFeature}
+              showBmiFeature={showBmiFeature}
+              setShowBmiFeature={setShowBmiFeature}
+              setUser={setUser}
+              setRecords={setRecords}
+            />
+          )}
+        </main>
+
+        <footer className="hidden md:block text-center py-3 text-xs opacity-30 font-medium" style={{ color: darkMode ? "#F8F6FE" : "#1E293B" }}>
+          🌿 HealthTrack — Personal Well-being Tracker
+        </footer>
+      </div>
 
       {user && <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} theme={theme} darkMode={darkMode} />}
     </div>

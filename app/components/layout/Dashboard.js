@@ -3,7 +3,6 @@
 import OverviewPage from "../views/OverviewPage";
 import ProfilePage from "../views/ProfilePage";
 import SpecialRecordsSection from "../views/SpecialRecordsSection";
-import CatCompanionWidget from "../CatCompanionWidget";
 import HealthForm from "../../pages/HealthForm";
 import HealthList from "../../pages/HealthList";
 import HealthChart from "../../pages/HealthChart";
@@ -25,8 +24,13 @@ export default function Dashboard({
   setShowPeriodFeature,
   showBmiFeature,
   setShowBmiFeature,
+  setUser,
+  setRecords,
 }) {
   const n = records.length;
+  const cardBg = darkMode ? "#252238" : "#FFFFFF";
+  const borderCol = darkMode ? "#3D3759" : "#F6D69B";
+  const textM = darkMode ? "#F8F6FE" : "#1E293B";
 
   const tabContent = {
     overview: (
@@ -43,17 +47,16 @@ export default function Dashboard({
       />
     ),
     form: (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <span>✏️</span> บันทึกสุขภาพประจำวัน meow~
-          </h2>
-          <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-purple-50 text-purple-600 border border-purple-200">
-            {new Date().toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })}
-          </span>
+      <div className="space-y-5">
+        <div className="rounded-[28px] p-6 shadow-xl border" style={{ background: cardBg, borderColor: borderCol }}>
+          <h3 className="text-lg font-black mb-5 flex items-center gap-2 tracking-tight" style={{ color: textM }}>
+            <span className="w-9 h-9 rounded-2xl flex items-center justify-center border" style={{ background: darkMode ? "#191724" : "#FFE6C2", borderColor: borderCol }}>
+              ✏️
+            </span>
+            บันทึกสุขภาพประจำวัน meow~
+          </h3>
+          <HealthForm user={user} records={records} setActiveTab={setActiveTab} />
         </div>
-
-        <HealthForm user={user} />
 
         <SpecialRecordsSection
           bmiRecord={bmiRecord}
@@ -67,30 +70,32 @@ export default function Dashboard({
       </div>
     ),
     list: (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <span>📋</span> รายงานและประวัติทั้งหมด 🐾
-          </h2>
-          <span className="text-xs font-black px-3.5 py-1 rounded-full bg-purple-600 text-white shadow-sm">
+      <div className="rounded-[28px] p-6 shadow-xl border" style={{ background: cardBg, borderColor: borderCol }}>
+        <h3 className="text-lg font-black mb-5 flex items-center gap-2 tracking-tight" style={{ color: textM }}>
+          <span className="w-9 h-9 rounded-2xl flex items-center justify-center border" style={{ background: darkMode ? "#191724" : "#FFE6C2", borderColor: borderCol }}>
+            📋
+          </span>
+          รายงานและประวัติการบันทึกทั้งหมด 🐾
+          <span className="ml-auto text-xs px-3 py-1 rounded-full font-bold border" style={{ background: theme.accent, color: "#191724", borderColor: borderCol }}>
             {n} รายการ
           </span>
-        </div>
+        </h3>
         <HealthList user={user} records={records} />
       </div>
     ),
     chart: (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <span>📊</span> วิเคราะห์แนวโน้มสุขภาพ 🐾
-          </h2>
+      <div className="rounded-[28px] p-6 shadow-xl border" style={{ background: cardBg, borderColor: borderCol }}>
+        <h3 className="text-lg font-black mb-5 flex items-center gap-2 tracking-tight" style={{ color: textM }}>
+          <span className="w-9 h-9 rounded-2xl flex items-center justify-center border" style={{ background: darkMode ? "#191724" : "#FFE6C2", borderColor: borderCol }}>
+            📊
+          </span>
+          วิเคราะห์แนวโน้มสุขภาพ 🐾
           {showBmiFeature && bmiRecord && (
-            <span className="text-xs font-black px-3 py-1 rounded-full bg-sky-100 text-sky-700 border border-sky-300">
+            <span className="ml-auto text-xs px-3 py-1 rounded-full font-bold border" style={{ background: "rgba(56,189,248,0.15)", color: "#38BDF8", borderColor: "rgba(56,189,248,0.3)" }}>
               ⚖️ BMI: {bmiRecord.bmi}
             </span>
           )}
-        </div>
+        </h3>
         <HealthChart records={records} bmiRecord={showBmiFeature ? bmiRecord : null} periodRecords={showPeriodFeature ? periodRecords : []} />
       </div>
     ),
@@ -108,19 +113,16 @@ export default function Dashboard({
         setShowPeriodFeature={setShowPeriodFeature}
         showBmiFeature={showBmiFeature}
         setShowBmiFeature={setShowBmiFeature}
+        setUser={setUser}
+        setRecords={setRecords}
       />
     ),
   };
 
   return (
     <div className="space-y-6">
-      {/* Top Interactive Cat Mascot Companion Banner */}
-      <CatCompanionWidget user={user} theme={theme} darkMode={darkMode} />
-
-      {/* Main Inner White Canvas hosting current Active Tab Content */}
-      <div className="bg-white rounded-[32px] p-6 sm:p-8 min-h-[700px] shadow-xl text-slate-900 border border-purple-100/50">
-        {tabContent[activeTab]}
-      </div>
+      {/* Render Active View Content */}
+      {tabContent[activeTab]}
     </div>
   );
 }

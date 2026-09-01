@@ -378,6 +378,26 @@ export default function ProfilePage({
           </div>
         </div>
       </div>
+
+      {/* Logout Action Button at Bottom of Profile Page */}
+      <div className="pt-4 flex justify-center">
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              const { logout } = await import("../../pages/Auth");
+              await logout();
+            } catch (e) {
+              console.error(e);
+            }
+            if (setUser) setUser(null);
+            if (setRecords) setRecords([]);
+          }}
+          className="w-full max-w-md py-4 rounded-2xl font-black text-sm text-rose-500 bg-rose-500/10 border-2 border-rose-400/40 hover:bg-rose-500 hover:text-white transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+        >
+          <span>🚪 ออกจากระบบ (Sign Out)</span>
+        </button>
+      </div>
     </div>
   );
 }

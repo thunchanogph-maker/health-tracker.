@@ -19,52 +19,33 @@ export default function CatCompanionWidget({ user, theme, darkMode }) {
       setPatCount(cnt);
       setPose("cheering");
       setShowPurr(true);
+      setQuoteIndex((prev) => (prev + 1) % CAT_QUOTES.length);
       setTimeout(() => {
         setPose("sitting");
         setShowPurr(false);
-      }, 2500);
+      }, 3000);
     };
 
     window.addEventListener("kuro-pat-updated", handleUpdatedPat);
     return () => window.removeEventListener("kuro-pat-updated", handleUpdatedPat);
   }, []);
 
-  const handlePat = () => {
-    const newCount = patCount + 1;
-    setPatCount(newCount);
-    localStorage.setItem("kuro-pat-count", newCount.toString());
-
-    // Switch pose temporarily on pat
-    const poses = ["cheering", "stretching", "sitting"];
-    const randomPose = poses[Math.floor(Math.random() * poses.length)];
-    setPose(randomPose);
-    setShowPurr(true);
-
-    // Pick next quote
-    setQuoteIndex((prev) => (prev + 1) % CAT_QUOTES.length);
-
-    setTimeout(() => {
-      setPose("sitting");
-      setShowPurr(false);
-    }, 2000);
-  };
-
-  // Determine friendship level
+  // Determine friendship level based on total daily record entries
   const currentLevel = [...CAT_FRIENDSHIP_LEVELS].reverse().find((l) => patCount >= l.min) || CAT_FRIENDSHIP_LEVELS[0];
 
   const cardBg = darkMode ? "#252238" : "#FFFFFF";
-  const borderCol = darkMode ? "#3D3759" : "#F1F5F9";
+  const borderCol = darkMode ? "#3D3759" : "#F6D69B";
   const textM = darkMode ? "#F8F6FE" : "#1E293B";
   const textS = darkMode ? "#B2ACCD" : "#64748B";
 
   return (
     <div
-      className="relative rounded-3xl p-5 overflow-hidden shadow-lg transition-all border group"
+      className="relative rounded-3xl p-5 overflow-hidden shadow-xl transition-all border group mb-4 select-none"
       style={{
         background: darkMode
           ? "linear-gradient(135deg, #252238 0%, #191724 100%)"
           : "linear-gradient(135deg, #FFF8ED 0%, #FFFFFF 100%)",
-        borderColor: darkMode ? "#3D3759" : "#F6D69B",
+        borderColor: borderCol,
         boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
       }}
     >
@@ -75,56 +56,44 @@ export default function CatCompanionWidget({ user, theme, darkMode }) {
       />
 
       <div className="flex flex-col sm:flex-row items-center gap-5 relative z-10">
-        {/* Cat Mascot Interactive */}
+        {/* Cat Mascot Display */}
         <div className="shrink-0 flex flex-col items-center">
           <CatMascot
             size={110}
             pose={pose}
             interactive={true}
-            onPat={handlePat}
-            speechBubble={showPurr ? "ฟินจัง meow~ 💖" : null}
+            speechBubble={showPurr ? "บันทึกแล้ว! ได้รับลูบหัว +1 meow~ 💖" : null}
           />
-          <button
-            onClick={handlePat}
-            className="mt-1 px-3 py-1 rounded-full text-xs font-black transition-all hover:scale-105 active:scale-95 shadow-sm border flex items-center gap-1"
-            style={{
-              background: theme.accent,
-              color: "#191724",
-              borderColor: "#F6D69B",
-            }}
-          >
-            <span>🐾 ลูบหัวน้อง Kuro</span>
-          </button>
         </div>
 
-        {/* Mascot Message & Friendship Progress */}
+        {/* Mascot Message & Friendship Level */}
         <div className="flex-1 text-center sm:text-left min-w-0">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
             <span
-              className="px-3 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1"
+              className="px-3 py-1 rounded-full text-xs font-black border flex items-center gap-1.5 shadow-sm"
               style={{
-                background: darkMode ? "rgba(246,214,155,0.12)" : "#FFE6C2",
+                background: darkMode ? "rgba(246,214,155,0.15)" : "#FFE6C2",
                 color: darkMode ? "#F6D69B" : "#B45309",
-                borderColor: darkMode ? "rgba(246,214,155,0.3)" : "#FDE68A",
+                borderColor: borderCol,
               }}
             >
               <span>{currentLevel.icon}</span>
-              <span>{currentLevel.title}</span>
+              <span>ระดับ: {currentLevel.title}</span>
             </span>
-            <span className="text-xs font-semibold" style={{ color: textS }}>
-              (ลูบหัวสะสม {patCount} ครั้ง)
+            <span className="text-xs font-bold" style={{ color: textS }}>
+              (ลูบหัวสะสม <strong style={{ color: theme.accent }}>{patCount}</strong> ครั้งจากการเขียนบันทึก)
             </span>
           </div>
 
           <h3 className="text-lg font-black tracking-tight mb-2" style={{ color: textM }}>
-            สวัสดีครับมนุษย์! 🐾 <span style={{ color: theme.accent }}>Kuro-chan</span> ดูแลอยู่นะ meow~
+            สวัสดีครับมนุษย์! 🐾 <span style={{ color: theme.accent }}>Kuro-chan</span> คอยดูแลสุขภาพอยู่นะ meow~
           </h3>
 
           <div
-            className="p-3 rounded-2xl border text-xs font-medium leading-relaxed transition-all"
+            className="p-3 rounded-2xl border text-xs font-medium leading-relaxed transition-all shadow-inner"
             style={{
               background: darkMode ? "#191724" : "#FFFBEB",
-              borderColor: darkMode ? "#2A2640" : "#FDE68A",
+              borderColor: borderCol,
               color: textM,
             }}
           >

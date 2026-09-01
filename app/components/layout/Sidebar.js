@@ -12,38 +12,81 @@ export default function Sidebar({ activeTab, setActiveTab, darkMode, theme, user
     { id: "profile", icon: "👤", label: "โปรไฟล์" },
   ];
 
+  const bg = darkMode ? "#191724" : "#FFF8ED";
+  const borderCol = darkMode ? "#3D3759" : "#F6D69B";
+  const textS = darkMode ? "#B2ACCD" : "#64748B";
+  const textM = darkMode ? "#F8F6FE" : "#1E293B";
+
   return (
-    <aside className="flex flex-col h-full py-6 pr-0 shrink-0 select-none z-20 w-60">
-      {/* Official HealthTrack Logo Banner (Matching Image 3 Top Left) */}
-      <div className="px-5 mb-8 flex flex-col items-center justify-center">
-        <AppLogo size={150} variant="sticker" />
+    <aside
+      className="hidden md:flex flex-col min-h-screen py-6 shrink-0 transition-all duration-300 relative z-20 border-r select-none"
+      style={{
+        width: collapsed ? "68px" : "260px",
+        background: bg,
+        borderColor: borderCol,
+        boxShadow: "4px 0 24px rgba(0,0,0,0.06)",
+      }}
+    >
+      <div className={`flex items-center mb-6 ${collapsed ? "justify-center px-2" : "justify-between px-5"}`}>
+        {!collapsed && (
+          <div className="flex items-center gap-3 overflow-hidden">
+            <AppLogo size={140} variant="sticker" />
+          </div>
+        )}
+        {collapsed && <AppLogo size={34} />}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="w-7 h-7 rounded-xl flex items-center justify-center text-xs hover:opacity-80 shrink-0 transition border"
+          style={{ background: darkMode ? "#252238" : "#FFE6C2", color: textM, borderColor: borderCol }}
+        >
+          {collapsed ? "▶" : "◀"}
+        </button>
       </div>
 
-      {/* Navigation List with Inverted Curve Active Tabs */}
-      <nav className="flex flex-col gap-2 flex-1 pl-4">
+      {!collapsed && (
+        <div className="text-xs font-black uppercase tracking-widest mb-2 px-5" style={{ color: textS }}>
+          เมนูหลัก 🐾
+        </div>
+      )}
+
+      <nav className="flex flex-col gap-1.5 flex-1 px-3">
         {nav.map((item) => {
           const active = activeTab === item.id;
           return (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3.5 py-3.5 px-5 font-black text-sm transition-all duration-200 text-left w-full cursor-pointer ${
-                active ? "sidebar-tab-active" : "text-white/80 hover:text-white hover:bg-white/10 rounded-2xl"
+              className={`flex items-center gap-3 py-3 rounded-2xl text-sm font-bold transition-all duration-200 text-left w-full border ${
+                collapsed ? "justify-center" : "px-3.5"
               }`}
+              style={{
+                background: active ? theme.accent : "transparent",
+                borderColor: active ? theme.accent : "transparent",
+                color: active ? "#191724" : textS,
+                boxShadow: active ? `0 6px 18px ${theme.accent}40` : "none",
+              }}
+              title={collapsed ? item.label : undefined}
             >
-              <span className={`text-xl shrink-0 ${active ? "text-purple-600" : "text-white"}`}>{item.icon}</span>
-              <span className="tracking-tight text-base">{item.label}</span>
+              <span className="text-lg shrink-0">{item.icon}</span>
+              {!collapsed && (
+                <>
+                  <span className="font-extrabold">{item.label}</span>
+                  {active && <span className="ml-auto text-xs">🐾</span>}
+                </>
+              )}
             </button>
           );
         })}
       </nav>
 
-      {/* Mini Kuro Mascot Widget at Sidebar Bottom */}
-      <div className="mx-4 mt-auto p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center text-white">
-        <CatMascot size={64} pose="sitting" interactive={true} />
-        <div className="text-xs font-black mt-1">Kuro-chan 🐾</div>
-        <div className="text-[10px] font-medium opacity-80">HealthTrack Companion</div>
-      </div>
+      {/* Mini Kuro Mascot Widget */}
+      {!collapsed && (
+        <div className="mx-3 mt-auto p-3 rounded-2xl text-center border" style={{ background: darkMode ? "#252238" : "#FFFBEB", borderColor: borderCol }}>
+          <CatMascot size={64} pose="sitting" interactive={true} />
+          <div className="text-xs font-black mt-1" style={{ color: textM }}>Kuro-chan</div>
+          <div className="text-[11px] font-medium" style={{ color: textS }}>HealthTrack Companion 🐾</div>
+        </div>
+      )}
     </aside>
   );
 }

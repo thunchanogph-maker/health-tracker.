@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { ref, push } from "firebase/database";
+import { useState, useEffect, useRef } from "react";
+import { ref, push, update, remove } from "firebase/database";
 import { db } from "./firebase";
 import MoodBadge from "../components/MoodBadge";
 
 const MOODS = [
   { value: "great", emoji: "😸", label: "สดใสมาก", bg: "#ECFDF5", text: "#059669", border: "#A7F3D0" },
-  { value: "good",  emoji: "😺", label: "อารมณ์ดี", bg: "#EFF6FF", text: "#2563EB", border: "#BFDBFE" },
-  { value: "okay",  emoji: "😐", label: "เฉยๆ",     bg: "#FEF3C7", text: "#D97706", border: "#FDE68A" },
-  { value: "bad",   emoji: "😿", label: "ไม่ค่อยดี", bg: "#FFEDD5", text: "#EA580C", border: "#FED7AA" },
-  { value: "awful", emoji: "😾", label: "แย่จัง",   bg: "#FEE2E2", text: "#DC2626", border: "#FECACA" },
+  { value: "good", emoji: "😺", label: "อารมณ์ดี", bg: "#EFF6FF", text: "#2563EB", border: "#BFDBFE" },
+  { value: "okay", emoji: "😐", label: "เฉยๆ", bg: "#FEF3C7", text: "#D97706", border: "#FDE68A" },
+  { value: "bad", emoji: "😿", label: "ไม่ค่อยดี", bg: "#FFEDD5", text: "#EA580C", border: "#FED7AA" },
+  { value: "awful", emoji: "😾", label: "แย่จัง", bg: "#FEE2E2", text: "#DC2626", border: "#FECACA" },
 ];
 
-export default function HealthForm({ user }) {
+export default function HealthForm({ user, records = [], setActiveTab }) {
   const today = new Date().toISOString().split("T")[0];
 
   const [date, setDate] = useState(today);
@@ -23,20 +23,56 @@ export default function HealthForm({ user }) {
   const [exerciseMinutes, setExerciseMinutes] = useState(30);
   const [stressLevel, setStressLevel] = useState(1);
   const [note, setNote] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState(null);
-  const [error, setError] = useState(null);
+  const [photo, setPhoto] = useState(null);
+  const [editingId, setEditingId] = useState(null);
 
-  const resetForm = () => {
-    setDate(today);
-    setMood("great");
-    setSleepHours(7);
-    setWaterIntake(8);
-    setExerciseMinutes(30);
-    setStressLevel(1);
-    setNote("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Check if a record already exists for the selected date
+  useEffect(() => {
+    const existingRec = records.find((r) => r.date === date);
+    if (existingRec) {
+      setEditingId(existingRec.id);
+      setMood(existingRec.mood || "great");
+      setSleepHours(existingRec.sleepHours ?? 7);
+      setWaterIntake(existingRec.waterIntake ?? 8);
+      setExerciseMinutes(existingRec.exerciseMinutes ?? 30);
+      setStressLevel(existingRec.stressLevel ?? 1);
+      setNote(existingRec.note || "");
+      setPhoto(existingRec.photo || null);
+    } else {
+      setEditingId(null);
+      setMood("great");
+      setSleepHours(7);
+      setWaterIntake(8);
+      setExerciseMinutes(30);
+      setStressLevel(1);
+      setNote("");
+      setPhoto(null);
+    }
+  }, [date, records]);
+
+  // Handle Photo File Upload
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("กรุณาเลือกไฟล์รูปภาพเท่านั้น");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError("ไฟล์รูปภาพต้องมีขนาดไม่เกิน 2MB");
+      return;
+    }
+    setError(null);
+    const reader = new FileReader();
+    reader.onload = (ev) => setPhoto(ev.target.result);
+    reader.readAsDataURL(file);
   };
 
+  // Handle Submit (Create or Update)
   const handleSubmit = async () => {
     if (!user?.uid) {
       setError("กรุณา Sign in ก่อนบันทึกข้อมูล meow~");
@@ -44,10 +80,9 @@ export default function HealthForm({ user }) {
     }
     setLoading(true);
     setError(null);
-    setSuccessMsg(null);
 
     try {
-      const newRecord = {
+      const recordData = {
         date,
         mood,
         sleepHours,
@@ -55,25 +90,32 @@ export default function HealthForm({ user }) {
         exerciseMinutes,
         stressLevel,
         note: note.trim(),
-        createdAt: new Date().toISOString(),
+        photo: photo || null,
+        updatedAt: new Date().toISOString(),
       };
 
-      await push(ref(db, `users/${user.uid}/healthRecords`), newRecord);
+      if (editingId) {
+        // Update existing record for this date
+        await update(ref(db, `users/${user.uid}/healthRecords/${editingId}`), recordData);
+      } else {
+        // Create new record for this date
+        recordData.createdAt = new Date().toISOString();
+        await push(ref(db, `users/${user.uid}/healthRecords`), recordData);
+      }
 
-      // ── Auto +1 Pat for Kuro-chan ──
+      // Auto +1 Pat for Kuro-chan
       const currentPat = parseInt(localStorage.getItem("kuro-pat-count") || "0", 10);
       const newPatCount = currentPat + 1;
       localStorage.setItem("kuro-pat-count", newPatCount.toString());
 
-      // Trigger window event so CatCompanionWidget updates immediately
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("kuro-pat-updated", { detail: { count: newPatCount } }));
       }
 
-      setSuccessMsg(`บันทึกสำเร็จ! Kuro-chan ดีใจจัง ได้รับการลูบหัว +1 🐾💖 (สะสมลูบหัวทั้งหมด ${newPatCount} ครั้ง)`);
-      resetForm();
-
-      setTimeout(() => setSuccessMsg(null), 5000);
+      // Auto Redirect to Overview page
+      if (setActiveTab) {
+        setActiveTab("overview");
+      }
     } catch (err) {
       setError("บันทึกข้อมูลไม่สำเร็จ: " + err.message);
     } finally {
@@ -81,19 +123,26 @@ export default function HealthForm({ user }) {
     }
   };
 
+  // Handle Delete Record
+  const handleDelete = async () => {
+    if (!editingId || !user?.uid) return;
+    if (!confirm("คุณต้องการลบบันทึกของวันนี้ใช่หรือไม่?")) return;
+    setLoading(true);
+    setError(null);
+    try {
+      await remove(ref(db, `users/${user.uid}/healthRecords/${editingId}`));
+      if (setActiveTab) {
+        setActiveTab("overview");
+      }
+    } catch (err) {
+      setError("ลบข้อมูลไม่สำเร็จ: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6 select-none">
-      {/* Toast Alert */}
-      {successMsg && (
-        <div className="flex items-center gap-3 bg-amber-400/20 border-2 border-amber-400 text-amber-900 dark:text-amber-200 rounded-2xl px-5 py-4 text-sm font-black shadow-lg animate-bounce">
-          <span className="text-2xl">😻</span>
-          <div>
-            <div>{successMsg}</div>
-            <div className="text-xs font-semibold opacity-90">ขอบคุณที่ใส่ใจดูแลสุขภาพร่วมกับน้อง Kuro นะ meow~! 🐾</div>
-          </div>
-        </div>
-      )}
-
       {error && (
         <div className="flex items-center gap-3 bg-rose-500/15 border-2 border-rose-400 text-rose-500 rounded-2xl px-5 py-3 text-sm font-bold">
           <span className="text-xl">❌</span>
@@ -101,19 +150,47 @@ export default function HealthForm({ user }) {
         </div>
       )}
 
-      {/* Date Picker Banner */}
-      <div className="flex items-center justify-between p-4 rounded-2xl border" style={{ background: "rgba(246,214,155,0.12)", borderColor: "#F6D69B" }}>
-        <label className="text-xs font-black flex items-center gap-2" style={{ color: "#F6D69B" }}>
-          <span>📅</span> วันที่บันทึกสุขภาพ
-        </label>
-        <input
-          type="date"
-          value={date}
-          max={today}
-          onChange={(e) => setDate(e.target.value)}
-          className="px-4 py-1.5 rounded-xl font-bold text-xs outline-none border transition"
-          style={{ background: "#252238", color: "#F8F6FE", borderColor: "#3D3759" }}
-        />
+      {/* Date Picker Header with Edit Mode Indicator */}
+      <div className="p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3" style={{ background: "rgba(246,214,155,0.12)", borderColor: "#F6D69B" }}>
+        <div className="flex items-center gap-2">
+          <span className="text-lg">📅</span>
+          <div>
+            <label className="text-xs font-black block" style={{ color: "#F6D69B" }}>
+              เลือกวันที่บันทึกสุขภาพ
+            </label>
+            {editingId ? (
+              <span className="text-[11px] font-bold text-amber-400">
+                ✏️ พบข้อมูลวันที่เลือกแล้ว (โหมดแก้ไข/อัปเดตบันทึก)
+              </span>
+            ) : (
+              <span className="text-[11px] font-medium text-slate-400">
+                เขียนบันทึกสุขภาพใหม่สำหรับวันนี้
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={date}
+            max={today}
+            onChange={(e) => setDate(e.target.value)}
+            className="px-4 py-2 rounded-xl font-bold text-xs outline-none border transition cursor-pointer"
+            style={{ background: "#252238", color: "#F8F6FE", borderColor: "#3D3759" }}
+          />
+          {editingId && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={loading}
+              className="px-3 py-2 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/20 border border-rose-400/40 hover:bg-rose-500 hover:text-white transition"
+              title="ลบบันทึกวันหนี้"
+            >
+              🗑️ ลบ
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Mood Selector Grid */}
@@ -147,7 +224,7 @@ export default function HealthForm({ user }) {
         </div>
       </div>
 
-      {/* Health Metrics Grid Cards (Inspired by Reference Images) */}
+      {/* Health Metrics Grid Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* 1. Sleep Card */}
         <div className="p-4 rounded-2xl border space-y-3" style={{ background: "rgba(37,34,56,0.8)", borderColor: "#3D3759" }}>
@@ -178,7 +255,7 @@ export default function HealthForm({ user }) {
           <input
             type="range"
             min={0}
-            max={12}
+            max={14}
             step={0.5}
             value={sleepHours}
             onChange={(e) => setSleepHours(Number(e.target.value))}
@@ -294,41 +371,79 @@ export default function HealthForm({ user }) {
         </div>
       </div>
 
-      {/* Note Textarea */}
-      <div>
-        <label className="block text-xs font-black text-slate-300 mb-2">
-          📝 บันทึกไดอารี่ประจำวัน <span className="text-slate-400 font-medium">(ไม่บังคับ)</span>
-        </label>
+      {/* Diary & Photo Journal Section */}
+      <div className="p-5 rounded-3xl border space-y-4 shadow-lg" style={{ background: "rgba(25,23,36,0.9)", borderColor: "#3D3759" }}>
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-black text-amber-300 flex items-center gap-2">
+            <span>📖</span> บันทึกไดอารี่ประจำวัน & ภาพถ่ายความประทับใจ
+          </label>
+          <span className="text-[11px] text-slate-400 font-medium">บันทึกรูปภาพความทรงจำ</span>
+        </div>
+
         <textarea
           rows={3}
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="วันนี้มีเรื่องราวดีๆ อะไรอยากเล่าให้ Kuro-chan ฟังบ้างไหม meow~?"
+          placeholder="วันนี้มีเรื่องราวดีๆ อะไรอยากเขียนบันทึกไว้บ้างไหม meow~?"
           className="w-full px-4 py-3 rounded-2xl text-xs font-medium resize-none border outline-none transition"
-          style={{ background: "#191724", color: "#F8F6FE", borderColor: "#3D3759" }}
+          style={{ background: "#252238", color: "#F8F6FE", borderColor: "#3D3759" }}
         />
+
+        {/* Photo Upload Area */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-1">
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            className="hidden"
+            onChange={handlePhotoUpload}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="px-4 py-2.5 rounded-2xl text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-400/40 hover:bg-purple-500 hover:text-white transition flex items-center gap-2 shadow"
+          >
+            <span>📷 {photo ? "เปลี่ยนรูปภาพประจำวัน" : "แนบรูปภาพไดอารี่"}</span>
+          </button>
+
+          {photo && (
+            <div className="relative group rounded-2xl overflow-hidden border border-purple-400/50 shadow-md">
+              <img src={photo} alt="Diary attachment" className="w-24 h-24 object-cover" />
+              <button
+                type="button"
+                onClick={() => setPhoto(null)}
+                className="absolute top-1 right-1 bg-rose-600 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center shadow hover:scale-110 transition"
+                title="ลบรูปภาพ"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Submit Button with Kuro Pat Reward Badge */}
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={loading}
-        className="w-full py-4 rounded-2xl font-black text-slate-900 text-sm flex items-center justify-center gap-2 shadow-xl border-2 transition-all hover:scale-102 active:scale-98 cursor-pointer"
-        style={{
-          background: loading ? "#94A3B8" : "#F6D69B",
-          borderColor: "#FDE68A",
-          boxShadow: "0 6px 20px rgba(246,214,155,0.3)",
-        }}
-      >
-        {loading ? (
-          <span>กำลังบันทึกข้อมูล meow...</span>
-        ) : (
-          <>
+      {/* Action Buttons: Submit / Update */}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={loading}
+          className="flex-1 py-4 rounded-2xl font-black text-slate-900 text-sm flex items-center justify-center gap-2 shadow-xl border-2 transition-all hover:scale-102 active:scale-98 cursor-pointer"
+          style={{
+            background: loading ? "#94A3B8" : "#F6D69B",
+            borderColor: "#FDE68A",
+            boxShadow: "0 6px 20px rgba(246,214,155,0.3)",
+          }}
+        >
+          {loading ? (
+            <span>กำลังบันทึกข้อมูล meow...</span>
+          ) : editingId ? (
+            <span>💾 อัปเดตบันทึก + ลูบหัว Kuro-chan 🐾 (+1 Pat)</span>
+          ) : (
             <span>💾 บันทึกสุขภาพ + ลูบหัว Kuro-chan 🐾 (+1 Pat)</span>
-          </>
-        )}
-      </button>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

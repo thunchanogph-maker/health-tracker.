@@ -4,239 +4,357 @@ import { Bar, Pie, Line } from "react-chartjs-2";
 import "chart.js/auto";
 
 // ---- Helpers ----
-const MOOD_ORDER  = ["awful", "bad", "okay", "good", "great"];
+const MOOD_ORDER = ["awful", "bad", "okay", "good", "great"];
 const MOOD_LABELS = { awful: "😭 Awful", bad: "😢 Bad", okay: "😐 Okay", good: "😊 Good", great: "😄 Great" };
 const MOOD_COLORS = {
-  awful: "#f87171", bad: "#fb923c", okay: "#fbbf24", good: "#34d399", great: "#4ade80",
+  awful: "#f87171",
+  bad: "#fb923c",
+  okay: "#fbbf24",
+  good: "#34d399",
+  great: "#4ade80",
 };
 
 const chartBase = {
   maintainAspectRatio: false,
   responsive: true,
-  plugins: { legend: { position: "top", labels: { font: { size: 12 }, boxWidth: 14 } } },
+  plugins: {
+    legend: {
+      position: "top",
+      labels: { font: { size: 11, weight: "bold" }, color: "#94A3B8", boxWidth: 12 },
+    },
+  },
+  scales: {
+    x: { ticks: { color: "#94A3B8", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.05)" } },
+    y: { ticks: { color: "#94A3B8", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.05)" } },
+  },
 };
 
 // ---- No Data Placeholder ----
-function NoData() {
+function NoData({ msg = "ยังไม่มีข้อมูลในระบบ" }) {
   return (
-    <div className="flex flex-col items-center justify-center h-40 text-gray-400 gap-2">
-      <span className="text-4xl">📭</span>
-      <p className="text-sm">ยังไม่มีข้อมูล — ลองบันทึกสุขภาพดูก่อนนะคะ</p>
+    <div className="flex flex-col items-center justify-center h-44 text-slate-400 gap-2">
+      <span className="text-3xl">📭</span>
+      <p className="text-xs font-semibold">{msg}</p>
     </div>
   );
 }
 
 // ---- Chart Card Wrapper ----
-function ChartCard({ title, children }) {
+function ChartCard({ title, icon = "📊", children, badge }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-      <h4 className="font-bold text-gray-700 mb-4 text-sm flex items-center gap-2">{title}</h4>
+    <div className="bg-[#252238] rounded-3xl border border-[#3D3759] shadow-xl p-5 relative overflow-hidden">
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#3D3759]/50">
+        <h4 className="font-black text-slate-100 text-sm flex items-center gap-2">
+          <span className="w-7 h-7 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-xs">
+            {icon}
+          </span>
+          {title}
+        </h4>
+        {badge}
+      </div>
       {children}
     </div>
   );
 }
 
 // ---- Summary Pill ----
-function Pill({ icon, label, value, color }) {
+function Pill({ icon, label, value, color, bg }) {
   return (
-    <div className={`flex items-center gap-3 rounded-xl px-4 py-3 border ${color}`}>
-      <span className="text-2xl">{icon}</span>
+    <div className="flex items-center gap-3 rounded-2xl p-4 border shadow-sm" style={{ background: bg, borderColor: color + "40" }}>
+      <span className="text-2xl shrink-0">{icon}</span>
       <div>
-        <div className="text-xs text-gray-500">{label}</div>
-        <div className="font-bold text-gray-800 text-lg">{value}</div>
+        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</div>
+        <div className="font-black text-base text-slate-100 mt-0.5">{value}</div>
       </div>
     </div>
   );
 }
 
-// ---- Main Component ----
-export default function HealthChart({ records }) {
+// ---- Main HealthChart Component ----
+export default function HealthChart({ records = [], bmiRecord = null, periodRecords = [] }) {
   if (!records || records.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-3">
+      <div className="flex flex-col items-center justify-center py-16 text-slate-400 gap-3 text-center">
         <span className="text-5xl">📊</span>
-        <p className="text-base font-semibold">ยังไม่มีข้อมูลเพียงพอสำหรับการวิเคราะห์</p>
-        <p className="text-sm">ไปที่แท็บ ✏️ บันทึก เพื่อเพิ่มข้อมูลก่อนนะคะ</p>
+        <p className="text-base font-black text-slate-200">ยังไม่มีข้อมูลเพียงพอสำหรับการวิเคราะห์</p>
+        <p className="text-xs">ไปที่แท็บ ✏️ บันทึก เพื่อเริ่มบันทึกสุขภาพกันก่อนนะคะ meow~</p>
       </div>
     );
   }
 
-  // ---- Sort records by date ----
+  // Sort records chronologically
   const sorted = [...records].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  // ---- Last 7 records for trend charts ----
   const last7 = sorted.slice(-7);
   const trendLabels = last7.map((r) => {
     const d = new Date(r.date);
     return `${d.getDate()}/${d.getMonth() + 1}`;
   });
 
-  // ============================================================
-  // 1. PIE — Mood distribution
-  // ============================================================
+  // 1. Mood Distribution
   const moodCounts = MOOD_ORDER.reduce((acc, m) => ({ ...acc, [m]: 0 }), {});
-  records.forEach((r) => { if (moodCounts[r.mood] !== undefined) moodCounts[r.mood]++; });
+  records.forEach((r) => {
+    if (moodCounts[r.mood] !== undefined) moodCounts[r.mood]++;
+  });
   const activeMoods = MOOD_ORDER.filter((m) => moodCounts[m] > 0);
 
   const moodPieData = {
     labels: activeMoods.map((m) => MOOD_LABELS[m]),
-    datasets: [{
-      data: activeMoods.map((m) => moodCounts[m]),
-      backgroundColor: activeMoods.map((m) => MOOD_COLORS[m]),
-      borderWidth: 2,
-      borderColor: "#fff",
-    }],
+    datasets: [
+      {
+        data: activeMoods.map((m) => moodCounts[m]),
+        backgroundColor: activeMoods.map((m) => MOOD_COLORS[m]),
+        borderWidth: 2,
+        borderColor: "#252238",
+      },
+    ],
   };
 
-  // ============================================================
-  // 2. LINE — Sleep trend (last 7)
-  // ============================================================
+  // 2. Sleep Trend
   const sleepLineData = {
     labels: trendLabels,
-    datasets: [{
-      label: "ชั่วโมงนอน",
-      data: last7.map((r) => r.sleepHours),
-      borderColor: "#60a5fa",
-      backgroundColor: "rgba(96,165,250,0.15)",
-      tension: 0.4,
-      fill: true,
-      pointBackgroundColor: "#3b82f6",
-      pointRadius: 5,
-    }],
-  };
-  const sleepOpts = {
-    ...chartBase,
-    scales: {
-      y: { min: 0, max: 12, title: { display: true, text: "ชั่วโมง" } },
-    },
+    datasets: [
+      {
+        label: "ชั่วโมงนอน",
+        data: last7.map((r) => r.sleepHours),
+        borderColor: "#38BDF8",
+        backgroundColor: "rgba(56,189,248,0.15)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#0284C7",
+        pointRadius: 5,
+      },
+    ],
   };
 
-  // ============================================================
-  // 3. BAR — Stress level per day (last 7)
-  // ============================================================
-  const stressColors = last7.map((r) => {
-    if (r.stressLevel <= 2) return "#4ade80";
-    if (r.stressLevel === 3) return "#fbbf24";
-    return "#f87171";
-  });
-
+  // 3. Stress Level Bar
   const stressBarData = {
     labels: trendLabels,
-    datasets: [{
-      label: "ระดับความเครียด",
-      data: last7.map((r) => r.stressLevel),
-      backgroundColor: stressColors,
-      borderRadius: 8,
-      borderSkipped: false,
-    }],
-  };
-  const stressOpts = {
-    ...chartBase,
-    scales: {
-      y: { min: 0, max: 5, ticks: { stepSize: 1 }, title: { display: true, text: "ระดับ (1-5)" } },
-    },
+    datasets: [
+      {
+        label: "ระดับความเครียด (1-5)",
+        data: last7.map((r) => r.stressLevel),
+        backgroundColor: last7.map((r) => (r.stressLevel <= 2 ? "#4ADE80" : r.stressLevel === 3 ? "#FBBF24" : "#F87171")),
+        borderRadius: 8,
+      },
+    ],
   };
 
-  // ============================================================
-  // 4. BAR — Water & Exercise (last 7)
-  // ============================================================
+  // 4. Water & Exercise
   const activityBarData = {
     labels: trendLabels,
     datasets: [
       {
         label: "💧 น้ำ (แก้ว)",
         data: last7.map((r) => r.waterIntake),
-        backgroundColor: "rgba(34,211,238,0.7)",
+        backgroundColor: "rgba(56,189,248,0.8)",
         borderRadius: 6,
       },
       {
         label: "🏃 ออกกำลังกาย (x10 นาที)",
         data: last7.map((r) => (r.exerciseMinutes / 10).toFixed(1)),
-        backgroundColor: "rgba(52,211,153,0.7)",
+        backgroundColor: "rgba(74,222,128,0.8)",
         borderRadius: 6,
       },
     ],
   };
 
-  // ============================================================
-  // Summary stats
-  // ============================================================
+  // 5. Special Record: Period Cycle Analytics
+  const sortedPeriod = [...periodRecords].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const periodCount = sortedPeriod.length;
+  let nextPeriodEst = "—";
+  if (periodCount > 0) {
+    const lastPeriodDate = new Date(sortedPeriod[periodCount - 1].date);
+    lastPeriodDate.setDate(lastPeriodDate.getDate() + 28);
+    nextPeriodEst = lastPeriodDate.toLocaleDateString("th-TH", { day: "numeric", month: "short" });
+  }
+
+  // Symptoms Breakdown Count
+  const symptomsMap = {};
+  periodRecords.forEach((pr) => {
+    if (pr.symptoms && Array.isArray(pr.symptoms)) {
+      pr.symptoms.forEach((sym) => {
+        symptomsMap[sym] = (symptomsMap[sym] || 0) + 1;
+      });
+    }
+  });
+
+  // 6. Special Record: BMI & Weight Trend
+  const bmiVal = bmiRecord ? parseFloat(bmiRecord.bmi) : null;
+  const getBmiStatus = (b) => {
+    if (!b) return { label: "ไม่มีข้อมูล", color: "#94A3B8" };
+    if (b < 18.5) return { label: "น้ำหนักน้อย / ผอม", color: "#38BDF8" };
+    if (b < 25) return { label: "น้ำหนักปกติ / สุขภาพดี", color: "#4ADE80" };
+    if (b < 30) return { label: "น้ำหนักเกิน", color: "#F59E0B" };
+    return { label: "ภาวะอ้วน", color: "#F43F5E" };
+  };
+  const bmiStatus = getBmiStatus(bmiVal);
+
   const n = records.length;
   const avg = (key) => (records.reduce((s, r) => s + (Number(r[key]) || 0), 0) / n).toFixed(1);
-  const topMood = activeMoods.reduce((a, b) => (moodCounts[a] >= moodCounts[b] ? a : b), activeMoods[0]);
 
   return (
-    <div className="space-y-6">
-
-      {/* ── Summary Pills ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Pill icon="📋" label="บันทึกทั้งหมด"   value={`${n} วัน`}          color="bg-gray-50 border-gray-200"    />
-        <Pill icon="💤" label="นอนเฉลี่ย"        value={`${avg("sleepHours")}h`}      color="bg-blue-50 border-blue-200"   />
-        <Pill icon="💧" label="น้ำเฉลี่ย"        value={`${avg("waterIntake")} แก้ว`} color="bg-cyan-50 border-cyan-200"   />
-        <Pill icon="😰" label="Stress เฉลี่ย"    value={`${avg("stressLevel")}/5`}    color="bg-red-50 border-red-200"     />
+    <div className="space-y-6 select-none">
+      {/* Summary Pills */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Pill icon="📋" label="บันทึกทั้งหมด" value={`${n} วัน`} color="#8B5CF6" bg="#252238" />
+        <Pill icon="💤" label="นอนเฉลี่ย" value={`${avg("sleepHours")} ชม.`} color="#38BDF8" bg="#252238" />
+        <Pill icon="💧" label="น้ำเฉลี่ย" value={`${avg("waterIntake")} แก้ว`} color="#4ADE80" bg="#252238" />
+        <Pill icon="😰" label="Stress เฉลี่ย" value={`${avg("stressLevel")} / 5`} color="#F43F5E" bg="#252238" />
       </div>
 
-      {/* ── Row 1: Mood Pie + Sleep Line ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* ── SPECIAL RECORDS ANALYTICS SECTION ── */}
+      <div className="p-6 rounded-3xl border-2 space-y-5" style={{ background: "linear-gradient(135deg, #2A2640 0%, #191724 100%)", borderColor: "#F6D69B" }}>
+        <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: "#3D3759" }}>
+          <h3 className="text-base font-black text-amber-300 flex items-center gap-2">
+            <span>✨</span> วิเคราะห์บันทึกพิเศษ (Special Records Analytics)
+          </h3>
+          <span className="text-xs font-bold text-amber-400 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30">
+            ฟีเจอร์เจาะลึก 🐾
+          </span>
+        </div>
 
-        <ChartCard title="🎭 สัดส่วน Mood ทั้งหมด">
-          {activeMoods.length === 0 ? <NoData /> : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* Period Tracker Analytics Card */}
+          <div className="p-5 rounded-2xl border space-y-4" style={{ background: "rgba(244,63,94,0.08)", borderColor: "rgba(244,63,94,0.4)" }}>
+            <div className="flex items-center justify-between">
+              <h4 className="font-black text-sm text-rose-400 flex items-center gap-2">
+                <span>🩸</span> การวิเคราะห์รอบประจำเดือน
+              </h4>
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-500 text-white">
+                {periodCount} บันทึก
+              </span>
+            </div>
+
+            {periodCount === 0 ? (
+              <NoData msg="ยังไม่มีบันทึกประจำเดือน สามารถกดเพิ่มได้ในแท็บโปรไฟล์" />
+            ) : (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-xl border bg-[#191724]" style={{ borderColor: "#3D3759" }}>
+                    <div className="text-[11px] font-medium text-slate-400">คาดการณ์รอบถัดไป</div>
+                    <div className="text-base font-black text-rose-400 mt-0.5">{nextPeriodEst}</div>
+                  </div>
+                  <div className="p-3 rounded-xl border bg-[#191724]" style={{ borderColor: "#3D3759" }}>
+                    <div className="text-[11px] font-medium text-slate-400">รอบเดือนเฉลี่ย</div>
+                    <div className="text-base font-black text-slate-100 mt-0.5">28 วัน</div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-xs font-bold text-slate-300 mb-2">อาการที่พบบ่อย (Symptoms):</div>
+                  {Object.keys(symptomsMap).length === 0 ? (
+                    <span className="text-xs text-slate-400">ไม่มีการระบุอาการ</span>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {Object.entries(symptomsMap).map(([sym, count]) => (
+                        <span key={sym} className="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                          {sym} ({count} ครั้ง)
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* BMI & Weight Analytics Card */}
+          <div className="p-5 rounded-2xl border space-y-4" style={{ background: "rgba(56,189,248,0.08)", borderColor: "rgba(56,189,248,0.4)" }}>
+            <div className="flex items-center justify-between">
+              <h4 className="font-black text-sm text-sky-400 flex items-center gap-2">
+                <span>⚖️</span> การวิเคราะห์น้ำหนัก & BMI
+              </h4>
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-sky-400 text-slate-900">
+                {bmiRecord ? `BMI ${bmiRecord.bmi}` : "ยังไม่กรอก"}
+              </span>
+            </div>
+
+            {!bmiRecord ? (
+              <NoData msg="ยังไม่ได้บันทึกน้ำหนัก-ส่วนสูง สามารถกรอกได้ในแท็บโปรไฟล์" />
+            ) : (
+              <div className="space-y-3">
+                <div className="p-4 rounded-xl border bg-[#191724] space-y-2" style={{ borderColor: "#3D3759" }}>
+                  <div className="flex justify-between items-center text-xs font-bold">
+                    <span className="text-slate-400">สถานะดัชนีมวลกาย:</span>
+                    <span style={{ color: bmiStatus.color }}>{bmiStatus.label}</span>
+                  </div>
+                  <div className="w-full h-3 rounded-full bg-slate-800 overflow-hidden relative">
+                    <div
+                      className="h-full transition-all duration-500 rounded-full"
+                      style={{
+                        width: `${Math.min((bmiVal / 40) * 100, 100)}%`,
+                        background: bmiStatus.color,
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[10px] text-slate-500 pt-1 font-bold">
+                    <span>ผอม (&lt;18.5)</span>
+                    <span>ปกติ (18.5-24.9)</span>
+                    <span>อ้วน (&gt;30)</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-xl border bg-[#191724]" style={{ borderColor: "#3D3759" }}>
+                    <div className="text-[11px] font-medium text-slate-400">น้ำหนักปัจจุบัน</div>
+                    <div className="text-base font-black text-sky-400 mt-0.5">{bmiRecord.weight} กก.</div>
+                  </div>
+                  <div className="p-3 rounded-xl border bg-[#191724]" style={{ borderColor: "#3D3759" }}>
+                    <div className="text-[11px] font-medium text-slate-400">ส่วนสูง</div>
+                    <div className="text-base font-black text-slate-100 mt-0.5">{bmiRecord.height} ซม.</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Row 1: Mood Pie + Sleep Line */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <ChartCard title="🎭 สัดส่วน Mood ทั้งหมด" icon="🎭">
+          {activeMoods.length === 0 ? (
+            <NoData />
+          ) : (
             <div style={{ height: 220 }}>
               <Pie data={moodPieData} options={chartBase} />
             </div>
           )}
         </ChartCard>
 
-        <ChartCard title="💤 แนวโน้มการนอน (7 วันล่าสุด)">
-          {last7.length === 0 ? <NoData /> : (
+        <ChartCard title="💤 แนวโน้มการนอน (7 วันล่าสุด)" icon="💤">
+          {last7.length === 0 ? (
+            <NoData />
+          ) : (
             <div style={{ height: 220 }}>
-              <Line data={sleepLineData} options={sleepOpts} />
+              <Line data={sleepLineData} options={chartBase} />
+            </div>
+          )}
+        </ChartCard>
+      </div>
+
+      {/* Row 2: Stress Bar + Activity Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <ChartCard title="😰 ระดับ Stress รายวัน (7 วันล่าสุด)" icon="😰">
+          {last7.length === 0 ? (
+            <NoData />
+          ) : (
+            <div style={{ height: 220 }}>
+              <Bar data={stressBarData} options={chartBase} />
             </div>
           )}
         </ChartCard>
 
-      </div>
-
-      {/* ── Row 2: Stress Bar + Activity Bar ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        <ChartCard title="😰 ระดับ Stress รายวัน (7 วันล่าสุด)">
-          {last7.length === 0 ? <NoData /> : (
-            <>
-              <div style={{ height: 220 }}>
-                <Bar data={stressBarData} options={stressOpts} />
-              </div>
-              <div className="flex gap-4 mt-3 text-xs text-gray-500 justify-center">
-                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-400 inline-block"/>1-2 ต่ำ</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-yellow-400 inline-block"/>3 ปานกลาง</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-400 inline-block"/>4-5 สูง</span>
-              </div>
-            </>
-          )}
-        </ChartCard>
-
-        <ChartCard title="💧🏃 น้ำ & ออกกำลังกาย (7 วันล่าสุด)">
-          {last7.length === 0 ? <NoData /> : (
+        <ChartCard title="💧🏃 น้ำ & ออกกำลังกาย (7 วันล่าสุด)" icon="🏃">
+          {last7.length === 0 ? (
+            <NoData />
+          ) : (
             <div style={{ height: 220 }}>
               <Bar data={activityBarData} options={chartBase} />
             </div>
           )}
         </ChartCard>
-
       </div>
-
-      {/* ── Mood this week insight ── */}
-      {topMood && (
-        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-5">
-          <p className="text-sm font-semibold text-gray-600 mb-1">💡 Insight</p>
-          <p className="text-gray-700">
-            อารมณ์ที่บันทึกบ่อยที่สุดคือ{" "}
-            <span className="font-bold">{MOOD_LABELS[topMood]}</span>{" "}
-            ({moodCounts[topMood]} ครั้ง จากทั้งหมด {n} วัน)
-          </p>
-        </div>
-      )}
-
     </div>
   );
 }
