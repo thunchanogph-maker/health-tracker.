@@ -99,7 +99,7 @@ body {
   z-index: 20;
 }
 
-/* ── Mobile Horizontal Active Tab Inverted Curve (Matching Desktop Sidebar Principle) ── */
+/* ── Mobile Horizontal Active Tab Inverted Curve (Flawless Concave Cutouts) ── */
 .bottom-nav-tab-active {
   position: relative;
   background-color: var(--canvas-bg, #191724) !important;
@@ -108,36 +108,33 @@ body {
   border-top-right-radius: 18px;
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
-  transform: translateY(-8px);
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-  z-index: 30;
+  z-index: 20;
 }
 
-/* Concave fillet on Top-Left connecting to navbar top edge */
+/* Concave fillet on TOP-LEFT connecting blue navbar smoothly into dark tab */
 .bottom-nav-tab-active::before {
   content: "";
   position: absolute;
-  top: 8px;
+  top: 0;
   left: -16px;
   width: 16px;
   height: 16px;
-  border-bottom-right-radius: 16px;
-  box-shadow: 4px 4px 0 4px var(--canvas-bg, #191724);
+  border-top-right-radius: 16px;
+  box-shadow: 4px -4px 0 4px var(--canvas-bg, #191724);
   pointer-events: none;
-  z-index: 30;
+  z-index: 20;
 }
 
-/* Concave fillet on Top-Right connecting to navbar top edge */
+/* Concave fillet on TOP-RIGHT connecting blue navbar smoothly into dark tab */
 .bottom-nav-tab-active::after {
   content: "";
   position: absolute;
-  top: 8px;
+  top: 0;
   right: -16px;
   width: 16px;
   height: 16px;
-  border-bottom-left-radius: 16px;
-  box-shadow: -4px 4px 0 4px var(--canvas-bg, #191724);
+  border-top-left-radius: 16px;
+  box-shadow: -4px -4px 0 4px var(--canvas-bg, #191724);
   pointer-events: none;
-  z-index: 30;
+  z-index: 20;
 }
