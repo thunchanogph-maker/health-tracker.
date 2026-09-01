@@ -101,7 +101,7 @@ export default function Dashboard({
             {n} รายการ
           </span>
         </h3>
-        <HealthList user={user} records={records} />
+        <HealthList user={user} records={records} darkMode={darkMode} theme={theme} />
       </div>
     ),
     chart: (
@@ -126,7 +126,7 @@ export default function Dashboard({
             </span>
           )}
         </h3>
-        <HealthChart records={records} bmiRecord={showBmiFeature ? bmiRecord : null} periodRecords={showPeriodFeature ? periodRecords : []} />
+        <HealthChart records={records} bmiRecord={showBmiFeature ? bmiRecord : null} periodRecords={showPeriodFeature ? periodRecords : []} darkMode={darkMode} theme={theme} />
       </div>
     ),
     profile: (

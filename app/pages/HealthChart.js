@@ -25,13 +25,13 @@ function NoData({ msg = "ยังไม่มีข้อมูลในระ�
 }
 
 // ---- Chart Card Wrapper ----
-function ChartCard({ title, icon = "📊", children, badge, cardBg, themeBorder, textM }) {
+function ChartCard({ title, icon = "📊", children, badge, bg, themeBorder, textM }) {
   return (
     <div
       className="rounded-3xl border shadow-xl p-5 relative overflow-hidden transition-all"
-      style={{ background: cardBg, borderColor: themeBorder + "50" }}
+      style={{ background: bg, borderColor: themeBorder }}
     >
-      <div className="flex items-center justify-between mb-4 pb-3 border-b" style={{ borderColor: themeBorder + "30" }}>
+      <div className="flex items-center justify-between mb-4 pb-3 border-b" style={{ borderColor: themeBorder + "40" }}>
         <h4 className="font-black text-sm flex items-center gap-2" style={{ color: textM }}>
           <span className="w-7 h-7 rounded-xl flex items-center justify-center text-xs border" style={{ background: themeBorder + "20", borderColor: themeBorder + "40" }}>
             {icon}
@@ -46,9 +46,12 @@ function ChartCard({ title, icon = "📊", children, badge, cardBg, themeBorder,
 }
 
 // ---- Summary Pill ----
-function Pill({ icon, label, value, color, bg, textM, textS }) {
+function Pill({ icon, label, value, color, bg, borderCol, textM, textS }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl p-4 border shadow-sm" style={{ background: bg, borderColor: color + "40" }}>
+    <div
+      className="flex items-center gap-3 rounded-2xl p-4 border shadow-md transition-all"
+      style={{ background: bg, borderColor: borderCol }}
+    >
       <span className="text-2xl shrink-0">{icon}</span>
       <div>
         <div className="text-[11px] font-bold uppercase tracking-wider" style={{ color: textS }}>{label}</div>
@@ -61,7 +64,7 @@ function Pill({ icon, label, value, color, bg, textM, textS }) {
 // ---- Main HealthChart Component ----
 export default function HealthChart({ records = [], bmiRecord = null, periodRecords = [], darkMode = true, theme }) {
   const cardBg = darkMode ? "#252238" : "#FFFFFF";
-  const subCardBg = darkMode ? "#191724" : "#F8FAFC";
+  const subCardBg = darkMode ? "#191724" : "#FFF8ED";
   const themeBorder = theme?.accent || "#8B5CF6";
   const textM = darkMode ? "#F8F6FE" : "#1E293B";
   const textS = darkMode ? "#B2ACCD" : "#64748B";
@@ -113,7 +116,7 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
         data: activeMoods.map((m) => moodCounts[m]),
         backgroundColor: activeMoods.map((m) => MOOD_COLORS[m]),
         borderWidth: 2,
-        borderColor: cardBg,
+        borderColor: subCardBg,
       },
     ],
   };
@@ -203,18 +206,18 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
 
   return (
     <div className="space-y-6 select-none">
-      {/* Summary Pills */}
+      {/* Summary Pills (Matches Screenshot 1) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Pill icon="📋" label="บันทึกทั้งหมด" value={`${n} วัน`} color={themeBorder} bg={cardBg} textM={textM} textS={textS} />
-        <Pill icon="💤" label="นอนเฉลี่ย" value={`${avg("sleepHours")} ชม.`} color="#38BDF8" bg={cardBg} textM={textM} textS={textS} />
-        <Pill icon="💧" label="น้ำเฉลี่ย" value={`${avg("waterIntake")} แก้ว`} color="#4ADE80" bg={cardBg} textM={textM} textS={textS} />
-        <Pill icon="😰" label="Stress เฉลี่ย" value={`${avg("stressLevel")} / 5`} color="#F43F5E" bg={cardBg} textM={textM} textS={textS} />
+        <Pill icon="📋" label="บันทึกทั้งหมด" value={`${n} วัน`} color={themeBorder} bg={subCardBg} borderCol={themeBorder} textM={textM} textS={textS} />
+        <Pill icon="💤" label="นอนเฉลี่ย" value={`${avg("sleepHours")} ชม.`} color="#38BDF8" bg={subCardBg} borderCol={themeBorder} textM={textM} textS={textS} />
+        <Pill icon="💧" label="น้ำเฉลี่ย" value={`${avg("waterIntake")} แก้ว`} color="#4ADE80" bg={subCardBg} borderCol={themeBorder} textM={textM} textS={textS} />
+        <Pill icon="😰" label="Stress เฉลี่ย" value={`${avg("stressLevel")} / 5`} color="#F43F5E" bg={subCardBg} borderCol={themeBorder} textM={textM} textS={textS} />
       </div>
 
-      {/* ── SPECIAL RECORDS ANALYTICS SECTION ── */}
+      {/* ── SPECIAL RECORDS ANALYTICS SECTION (Matches Screenshot 1) ── */}
       <div
         className="p-6 rounded-3xl border space-y-5 shadow-xl transition-all"
-        style={{ background: cardBg, borderColor: themeBorder }}
+        style={{ background: subCardBg, borderColor: themeBorder }}
       >
         <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: themeBorder + "40" }}>
           <h3 className="text-base font-black flex items-center gap-2" style={{ color: themeBorder }}>
@@ -230,7 +233,7 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Period Tracker Analytics Card */}
-          <div className="p-5 rounded-2xl border space-y-4 shadow-sm" style={{ background: subCardBg, borderColor: "rgba(244,63,94,0.4)" }}>
+          <div className="p-5 rounded-2xl border space-y-4 shadow-sm" style={{ background: cardBg, borderColor: "rgba(244,63,94,0.4)" }}>
             <div className="flex items-center justify-between">
               <h4 className="font-black text-sm text-rose-500 flex items-center gap-2">
                 <span>🩸</span> การวิเคราะห์รอบประจำเดือน
@@ -245,11 +248,11 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
             ) : (
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl border" style={{ background: cardBg, borderColor: themeBorder + "30" }}>
+                  <div className="p-3 rounded-xl border" style={{ background: subCardBg, borderColor: themeBorder + "30" }}>
                     <div className="text-[11px] font-medium" style={{ color: textS }}>คาดการณ์รอบถัดไป</div>
                     <div className="text-base font-black text-rose-500 mt-0.5">{nextPeriodEst}</div>
                   </div>
-                  <div className="p-3 rounded-xl border" style={{ background: cardBg, borderColor: themeBorder + "30" }}>
+                  <div className="p-3 rounded-xl border" style={{ background: subCardBg, borderColor: themeBorder + "30" }}>
                     <div className="text-[11px] font-medium" style={{ color: textS }}>รอบเดือนเฉลี่ย</div>
                     <div className="text-base font-black mt-0.5" style={{ color: textM }}>28 วัน</div>
                   </div>
@@ -274,7 +277,7 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
           </div>
 
           {/* BMI & Weight Analytics Card */}
-          <div className="p-5 rounded-2xl border space-y-4 shadow-sm" style={{ background: subCardBg, borderColor: "rgba(56,189,248,0.4)" }}>
+          <div className="p-5 rounded-2xl border space-y-4 shadow-sm" style={{ background: cardBg, borderColor: "rgba(56,189,248,0.4)" }}>
             <div className="flex items-center justify-between">
               <h4 className="font-black text-sm text-sky-500 flex items-center gap-2">
                 <span>⚖️</span> การวิเคราะห์น้ำหนัก & BMI
@@ -288,7 +291,7 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
               <NoData msg="ยังไม่ได้บันทึกน้ำหนัก-ส่วนสูง สามารถกรอกได้ในแท็บโปรไฟล์" />
             ) : (
               <div className="space-y-3">
-                <div className="p-4 rounded-xl border space-y-2" style={{ background: cardBg, borderColor: themeBorder + "30" }}>
+                <div className="p-4 rounded-xl border space-y-2" style={{ background: subCardBg, borderColor: themeBorder + "30" }}>
                   <div className="flex justify-between items-center text-xs font-bold">
                     <span style={{ color: textS }}>สถานะดัชนีมวลกาย:</span>
                     <span style={{ color: bmiStatus.color }}>{bmiStatus.label}</span>
@@ -310,11 +313,11 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl border" style={{ background: cardBg, borderColor: themeBorder + "30" }}>
+                  <div className="p-3 rounded-xl border" style={{ background: subCardBg, borderColor: themeBorder + "30" }}>
                     <div className="text-[11px] font-medium" style={{ color: textS }}>น้ำหนักปัจจุบัน</div>
                     <div className="text-base font-black text-sky-500 mt-0.5">{bmiRecord.weight} กก.</div>
                   </div>
-                  <div className="p-3 rounded-xl border" style={{ background: cardBg, borderColor: themeBorder + "30" }}>
+                  <div className="p-3 rounded-xl border" style={{ background: subCardBg, borderColor: themeBorder + "30" }}>
                     <div className="text-[11px] font-medium" style={{ color: textS }}>ส่วนสูง</div>
                     <div className="text-base font-black mt-0.5" style={{ color: textM }}>{bmiRecord.height} ซม.</div>
                   </div>
@@ -327,7 +330,7 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
 
       {/* Row 1: Mood Pie + Sleep Line */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <ChartCard title="🎭 สัดส่วน Mood ทั้งหมด" icon="🎭" cardBg={cardBg} themeBorder={themeBorder} textM={textM}>
+        <ChartCard title="🎭 สัดส่วน Mood ทั้งหมด" icon="🎭" bg={subCardBg} themeBorder={themeBorder} textM={textM}>
           {activeMoods.length === 0 ? (
             <NoData />
           ) : (
@@ -337,7 +340,7 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
           )}
         </ChartCard>
 
-        <ChartCard title="💤 แนวโน้มการนอน (7 วันล่าสุด)" icon="💤" cardBg={cardBg} themeBorder={themeBorder} textM={textM}>
+        <ChartCard title="💤 แนวโน้มการนอน (7 วันล่าสุด)" icon="💤" bg={subCardBg} themeBorder={themeBorder} textM={textM}>
           {last7.length === 0 ? (
             <NoData />
           ) : (
@@ -350,7 +353,7 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
 
       {/* Row 2: Stress Bar + Activity Bar */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <ChartCard title="😰 ระดับ Stress รายวัน (7 วันล่าสุด)" icon="😰" cardBg={cardBg} themeBorder={themeBorder} textM={textM}>
+        <ChartCard title="😰 ระดับ Stress รายวัน (7 วันล่าสุด)" icon="😰" bg={subCardBg} themeBorder={themeBorder} textM={textM}>
           {last7.length === 0 ? (
             <NoData />
           ) : (
@@ -360,7 +363,7 @@ export default function HealthChart({ records = [], bmiRecord = null, periodReco
           )}
         </ChartCard>
 
-        <ChartCard title="💧🏃 น้ำ & ออกกำลังกาย (7 วันล่าสุด)" icon="🏃" cardBg={cardBg} themeBorder={themeBorder} textM={textM}>
+        <ChartCard title="💧🏃 น้ำ & ออกกำลังกาย (7 วันล่าสุด)" icon="🏃" bg={subCardBg} themeBorder={themeBorder} textM={textM}>
           {last7.length === 0 ? (
             <NoData />
           ) : (
