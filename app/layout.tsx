@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className="font-sans antialiased">
+      <body className="antialiased font-sans">
         {children}
       </body>
     </html>
