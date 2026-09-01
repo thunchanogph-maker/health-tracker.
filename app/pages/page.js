@@ -97,7 +97,8 @@ export default function HealthPage() {
     localStorage.setItem("htrack-bmi", showBmiFeature ? "1" : "0");
   }, [showBmiFeature]);
 
-  const bg = darkMode ? "#191724" : "#FFF8ED";
+  const canvasBg = darkMode ? "#252238" : "#FFFFFF";
+  const appOuterBg = darkMode ? "#191724" : "#F4F0FF";
 
   const openAuth = (view) => {
     setAuthView(view);
@@ -108,7 +109,7 @@ export default function HealthPage() {
   };
 
   return (
-    <div className="flex min-h-screen transition-all" style={{ background: bg }}>
+    <div className="flex min-h-screen transition-all select-none" style={{ background: user ? canvasBg : appOuterBg }}>
       {showSettings && (
         <SettingsModal darkMode={darkMode} setDarkMode={setDarkMode} theme={theme} setTheme={setTheme} onClose={() => setShowSettings(false)} />
       )}
@@ -152,7 +153,7 @@ export default function HealthPage() {
         />
       )}
 
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0" style={{ background: canvasBg }}>
         <Header
           darkMode={darkMode}
           theme={theme}
@@ -163,7 +164,7 @@ export default function HealthPage() {
           localUser={localUser}
         />
 
-        <main className="flex-1 px-4 md:px-6 py-5 pb-24 md:pb-8 max-w-6xl w-full mx-auto">
+        <main className="flex-1 px-4 md:px-6 py-4 pb-24 md:pb-8 max-w-6xl w-full mx-auto">
           {!user ? (
             <WelcomePage darkMode={darkMode} theme={theme} onSignIn={() => openAuth("login")} onRegister={() => openAuth("register")} />
           ) : (

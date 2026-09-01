@@ -3,7 +3,7 @@
 :root {
   --background: #191724;
   --foreground: #F8F6FE;
-  --accent: #F6D69B;
+  --accent: #8B5CF6;
   --card-bg: #252238;
   --border: #3D3759;
 }
@@ -58,38 +58,41 @@ body {
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #F6D69B;
+  background: var(--accent);
 }
 
-/* Inverted Curved Active Tab Effect (Dynamically Colored via --content-bg variable) */
+/* ── Seamless Inverted Curved Active Tab Effect (Matching User Mockup) ── */
 .sidebar-tab-active {
   position: relative;
-  background-color: var(--content-bg) !important;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-  z-index: 10;
+  background-color: var(--canvas-bg, #252238) !important;
+  color: var(--theme-accent, #F6D69B) !important;
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  z-index: 20;
 }
 
 .sidebar-tab-active::before {
   content: "";
   position: absolute;
-  top: -20px;
+  top: -24px;
   right: 0;
-  width: 20px;
-  height: 20px;
-  border-bottom-right-radius: 20px;
-  box-shadow: 5px 5px 0 5px var(--content-bg);
+  width: 24px;
+  height: 24px;
+  border-bottom-right-radius: 24px;
+  box-shadow: 8px 8px 0 8px var(--canvas-bg, #252238);
   pointer-events: none;
+  z-index: 20;
 }
 
 .sidebar-tab-active::after {
   content: "";
   position: absolute;
-  bottom: -20px;
+  bottom: -24px;
   right: 0;
-  width: 20px;
-  height: 20px;
-  border-top-right-radius: 20px;
-  box-shadow: 5px -5px 0 5px var(--content-bg);
+  width: 24px;
+  height: 24px;
+  border-top-right-radius: 24px;
+  box-shadow: 8px -8px 0 8px var(--canvas-bg, #252238);
   pointer-events: none;
+  z-index: 20;
 }
