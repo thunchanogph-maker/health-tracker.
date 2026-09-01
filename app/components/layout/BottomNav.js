@@ -49,13 +49,18 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
     },
   ];
 
+  const navbarBg = theme?.accent || "#8B5CF6";
+  const canvasBg = darkMode ? "#252238" : "#FFFFFF";
+  const inactiveTextColor = "#FFFFFF";
+
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-center h-16 px-1"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-end h-16 px-2 select-none shadow-2xl"
       style={{
-        background: darkMode ? "#1E1E2E" : "#FFFFFF",
-        borderTop: darkMode ? "1px solid #2D2D3F" : "1px solid #F1F5F9",
-        boxShadow: "0 -4px 20px rgba(0,0,0,0.08)",
+        background: navbarBg,
+        boxShadow: "0 -6px 25px rgba(0,0,0,0.15)",
+        "--canvas-bg": canvasBg,
+        "--theme-accent": navbarBg,
       }}
     >
       {nav.map((item) => {
@@ -64,11 +69,18 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl transition-all"
-            style={{ color: active ? theme.accent : darkMode ? "#64748B" : "#94A3B8" }}
+            className={`flex flex-col items-center justify-center gap-0.5 pt-2 pb-2 px-3 transition-all cursor-pointer ${
+              active ? "bottom-nav-tab-active shadow-lg" : "hover:bg-white/10 rounded-t-2xl"
+            }`}
+            style={{
+              background: active ? canvasBg : "transparent",
+              color: active ? navbarBg : inactiveTextColor,
+            }}
           >
-            <span className="flex items-center justify-center">{item.icon}</span>
-            <span className="text-xs font-semibold">{item.label}</span>
+            <span className="flex items-center justify-center shrink-0" style={{ color: active ? navbarBg : inactiveTextColor }}>
+              {item.icon}
+            </span>
+            <span className="text-[11px] font-black tracking-tight">{item.label}</span>
           </button>
         );
       })}
