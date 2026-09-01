@@ -34,7 +34,7 @@ export default function CatCompanionWidget({ user, theme, darkMode }) {
   const currentLevel = [...CAT_FRIENDSHIP_LEVELS].reverse().find((l) => patCount >= l.min) || CAT_FRIENDSHIP_LEVELS[0];
 
   const cardBg = darkMode ? "#252238" : "#FFFFFF";
-  const borderCol = darkMode ? "#3D3759" : "#F6D69B";
+  const borderCol = theme?.accent || "#8B5CF6";
   const textM = darkMode ? "#F8F6FE" : "#1E293B";
   const textS = darkMode ? "#B2ACCD" : "#64748B";
 
@@ -42,11 +42,9 @@ export default function CatCompanionWidget({ user, theme, darkMode }) {
     <div
       className="relative rounded-3xl p-5 overflow-hidden shadow-xl transition-all border group mb-4 select-none"
       style={{
-        background: darkMode
-          ? "linear-gradient(135deg, #252238 0%, #191724 100%)"
-          : "linear-gradient(135deg, #FFF8ED 0%, #FFFFFF 100%)",
+        background: cardBg,
         borderColor: borderCol,
-        boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
+        boxShadow: `0 8px 30px ${theme?.accent || "#8B5CF6"}20`,
       }}
     >
       {/* Background Fluid Wave Accent */}

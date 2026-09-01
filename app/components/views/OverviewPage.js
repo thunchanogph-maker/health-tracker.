@@ -26,7 +26,8 @@ export default function OverviewPage({
   const cardBg = darkMode ? "#252238" : "#FFFFFF";
   const textM = darkMode ? "#F8F6FE" : "#1E293B";
   const textS = darkMode ? "#B2ACCD" : "#64748B";
-  const borderCol = darkMode ? "#3D3759" : "#F6D69B";
+  const borderCol = theme?.accent || "#8B5CF6";
+
 
   const MN = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
   const DN = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];

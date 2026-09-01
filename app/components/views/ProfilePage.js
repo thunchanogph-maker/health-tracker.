@@ -32,7 +32,8 @@ export default function ProfilePage({
   const cardBg = darkMode ? "#252238" : "#FFFFFF";
   const textM = darkMode ? "#F8F6FE" : "#1E293B";
   const textS = darkMode ? "#B2ACCD" : "#64748B";
-  const borderCol = darkMode ? "#3D3759" : "#F6D69B";
+  const borderCol = theme?.accent || "#8B5CF6";
+
 
   const n = records.length;
   const avg = (key) => (n ? (records.reduce((s, r) => s + (Number(r[key]) || 0), 0) / n).toFixed(1) : "—");

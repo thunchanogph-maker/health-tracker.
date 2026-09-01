@@ -34,7 +34,9 @@ export default function SpecialRecordsSection({
         onClick={onOpenPeriod}
         className="rounded-[24px] p-5 text-left transition-all duration-300 border hover:scale-102 cursor-pointer flex flex-col justify-between relative overflow-hidden group shadow-lg"
         style={{
-          background: "linear-gradient(135deg, rgba(244,63,94,0.15) 0%, rgba(37,34,56,0.9) 100%)",
+          background: darkMode
+            ? "linear-gradient(135deg, rgba(244,63,94,0.15) 0%, rgba(37,34,56,0.9) 100%)"
+            : "linear-gradient(135deg, #FFF0F3 0%, #FFFFFF 100%)",
           borderColor: "rgba(244,63,94,0.4)",
         }}
       >
@@ -47,11 +49,11 @@ export default function SpecialRecordsSection({
           </span>
         </div>
         <div>
-          <h4 className="font-black text-base text-rose-400 mb-0.5">
+          <h4 className="font-black text-base text-rose-500 dark:text-rose-400 mb-0.5">
             บันทึกประจำเดือน & รอบเดือน
           </h4>
           <p className="text-xs font-medium" style={{ color: textS }}>
-            ติดตามรอบเดือน บันทึกอาการ และแสดงสัญลักษณ์ 🩸 ในปฏิทินปฏิทินแมว
+            ติดตามรอบเดือน บันทึกอาการ และแสดงสัญลักษณ์ 🩸 ในปฏิทินแมว
           </p>
         </div>
       </button>
@@ -62,7 +64,9 @@ export default function SpecialRecordsSection({
         onClick={onOpenBmi}
         className="rounded-[24px] p-5 text-left transition-all duration-300 border hover:scale-102 cursor-pointer flex flex-col justify-between relative overflow-hidden group shadow-lg"
         style={{
-          background: "linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(37,34,56,0.9) 100%)",
+          background: darkMode
+            ? "linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(37,34,56,0.9) 100%)"
+            : "linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 100%)",
           borderColor: "rgba(56,189,248,0.4)",
         }}
       >

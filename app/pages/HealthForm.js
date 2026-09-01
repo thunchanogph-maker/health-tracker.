@@ -13,7 +13,7 @@ const MOODS = [
   { value: "awful", emoji: "😾", label: "แย่จัง", bg: "#FEE2E2", text: "#DC2626", border: "#FECACA" },
 ];
 
-export default function HealthForm({ user, records = [], setActiveTab }) {
+export default function HealthForm({ user, records = [], setActiveTab, darkMode, theme }) {
   const today = new Date().toISOString().split("T")[0];
 
   const [date, setDate] = useState(today);
@@ -29,6 +29,12 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
+
+  const themeAccent = theme?.accent || "#8B5CF6";
+  const cardBg = darkMode ? "#252238" : "#FFFFFF";
+  const subCardBg = darkMode ? "#191724" : "#F8FAFC";
+  const textM = darkMode ? "#F8F6FE" : "#1E293B";
+  const textS = darkMode ? "#B2ACCD" : "#64748B";
 
   // Check if a record already exists for the selected date
   useEffect(() => {
@@ -151,19 +157,25 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
       )}
 
       {/* Date Picker Header with Edit Mode Indicator */}
-      <div className="p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3" style={{ background: "rgba(246,214,155,0.12)", borderColor: "#F6D69B" }}>
+      <div
+        className="p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm"
+        style={{
+          background: darkMode ? "rgba(246,214,155,0.08)" : "#FFF8ED",
+          borderColor: themeAccent + "80",
+        }}
+      >
         <div className="flex items-center gap-2">
           <span className="text-lg">📅</span>
           <div>
-            <label className="text-xs font-black block" style={{ color: "#F6D69B" }}>
+            <label className="text-xs font-black block" style={{ color: themeAccent }}>
               เลือกวันที่บันทึกสุขภาพ
             </label>
             {editingId ? (
-              <span className="text-[11px] font-bold text-amber-400">
+              <span className="text-[11px] font-bold text-amber-500">
                 ✏️ พบข้อมูลวันที่เลือกแล้ว (โหมดแก้ไข/อัปเดตบันทึก)
               </span>
             ) : (
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="text-[11px] font-medium" style={{ color: textS }}>
                 เขียนบันทึกสุขภาพใหม่สำหรับวันนี้
               </span>
             )}
@@ -177,14 +189,18 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
             max={today}
             onChange={(e) => setDate(e.target.value)}
             className="px-4 py-2 rounded-xl font-bold text-xs outline-none border transition cursor-pointer"
-            style={{ background: "#252238", color: "#F8F6FE", borderColor: "#3D3759" }}
+            style={{
+              background: cardBg,
+              color: textM,
+              borderColor: themeAccent + "60",
+            }}
           />
           {editingId && (
             <button
               type="button"
               onClick={handleDelete}
               disabled={loading}
-              className="px-3 py-2 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/20 border border-rose-400/40 hover:bg-rose-500 hover:text-white transition"
+              className="px-3 py-2 rounded-xl text-xs font-bold text-rose-500 bg-rose-500/10 border border-rose-400/40 hover:bg-rose-500 hover:text-white transition cursor-pointer"
               title="ลบบันทึกวันหนี้"
             >
               🗑️ ลบ
@@ -195,7 +211,7 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
 
       {/* Mood Selector Grid */}
       <div>
-        <label className="block text-xs font-black uppercase tracking-wider mb-3 text-amber-300">
+        <label className="block text-xs font-black uppercase tracking-wider mb-3" style={{ color: themeAccent }}>
           🎭 อารมณ์ความรู้สึกวันนี้เป็นอย่างไร?
         </label>
         <div className="grid grid-cols-5 gap-2">
@@ -208,14 +224,14 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
                 onClick={() => setMood(m.value)}
                 className="flex flex-col items-center justify-center py-3.5 px-1 rounded-2xl border-2 transition-all duration-200 cursor-pointer"
                 style={{
-                  background: isSelected ? m.bg : "rgba(37,34,56,0.6)",
-                  borderColor: isSelected ? m.border : "#3D3759",
+                  background: isSelected ? m.bg : cardBg,
+                  borderColor: isSelected ? m.border : themeAccent + "40",
                   transform: isSelected ? "scale(1.05)" : "scale(1)",
-                  boxShadow: isSelected ? "0 6px 16px rgba(0,0,0,0.15)" : "none",
+                  boxShadow: isSelected ? "0 6px 16px rgba(0,0,0,0.12)" : "none",
                 }}
               >
                 <span className="text-2xl mb-1">{m.emoji}</span>
-                <span className="text-xs font-black" style={{ color: isSelected ? m.text : "#B2ACCD" }}>
+                <span className="text-xs font-black" style={{ color: isSelected ? m.text : textS }}>
                   {m.label}
                 </span>
               </button>
@@ -224,10 +240,13 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
         </div>
       </div>
 
-      {/* Health Metrics Grid Cards */}
+      {/* Health Metrics Grid Cards (Matching Theme Border & Canvas Color) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* 1. Sleep Card */}
-        <div className="p-4 rounded-2xl border space-y-3" style={{ background: "rgba(37,34,56,0.8)", borderColor: "#3D3759" }}>
+        <div
+          className="p-4 rounded-2xl border space-y-3 shadow-sm"
+          style={{ background: cardBg, borderColor: themeAccent + "50" }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-black flex items-center gap-1.5" style={{ color: "#38BDF8" }}>
               <span>💤</span> การนอนหลับ
@@ -243,9 +262,13 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
                 key={h}
                 type="button"
                 onClick={() => setSleepHours(h)}
-                className={`px-3 py-1 rounded-xl text-xs font-bold border transition ${
-                  sleepHours === h ? "bg-sky-400 text-slate-900 border-sky-300 font-black shadow" : "bg-[#191724] text-slate-300 border-[#3D3759]"
-                }`}
+                className="px-3 py-1 rounded-xl text-xs font-bold border transition cursor-pointer"
+                style={{
+                  background: sleepHours === h ? "#38BDF8" : subCardBg,
+                  color: sleepHours === h ? "#191724" : textM,
+                  borderColor: sleepHours === h ? "#38BDF8" : themeAccent + "30",
+                  fontWeight: sleepHours === h ? "900" : "600",
+                }}
               >
                 {h} ชม.
               </button>
@@ -264,7 +287,10 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
         </div>
 
         {/* 2. Water Card */}
-        <div className="p-4 rounded-2xl border space-y-3" style={{ background: "rgba(37,34,56,0.8)", borderColor: "#3D3759" }}>
+        <div
+          className="p-4 rounded-2xl border space-y-3 shadow-sm"
+          style={{ background: cardBg, borderColor: themeAccent + "50" }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-black flex items-center gap-1.5" style={{ color: "#4ADE80" }}>
               <span>💧</span> ดื่มน้ำเปล่า
@@ -280,9 +306,13 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
                 key={w}
                 type="button"
                 onClick={() => setWaterIntake(w)}
-                className={`px-3 py-1 rounded-xl text-xs font-bold border transition ${
-                  waterIntake === w ? "bg-emerald-400 text-slate-900 border-emerald-300 font-black shadow" : "bg-[#191724] text-slate-300 border-[#3D3759]"
-                }`}
+                className="px-3 py-1 rounded-xl text-xs font-bold border transition cursor-pointer"
+                style={{
+                  background: waterIntake === w ? "#4ADE80" : subCardBg,
+                  color: waterIntake === w ? "#191724" : textM,
+                  borderColor: waterIntake === w ? "#4ADE80" : themeAccent + "30",
+                  fontWeight: waterIntake === w ? "900" : "600",
+                }}
               >
                 {w} แก้ว
               </button>
@@ -290,7 +320,7 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
             <button
               type="button"
               onClick={() => setWaterIntake((prev) => prev + 1)}
-              className="px-3 py-1 rounded-xl text-xs font-black bg-amber-400 text-slate-900 border border-amber-300 shadow hover:scale-105"
+              className="px-3 py-1 rounded-xl text-xs font-black bg-amber-400 text-slate-900 border border-amber-300 shadow hover:scale-105 cursor-pointer"
             >
               +1 แก้ว 💧
             </button>
@@ -307,7 +337,10 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
         </div>
 
         {/* 3. Exercise Card */}
-        <div className="p-4 rounded-2xl border space-y-3" style={{ background: "rgba(37,34,56,0.8)", borderColor: "#3D3759" }}>
+        <div
+          className="p-4 rounded-2xl border space-y-3 shadow-sm"
+          style={{ background: cardBg, borderColor: themeAccent + "50" }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-black flex items-center gap-1.5" style={{ color: "#FB923C" }}>
               <span>🏃</span> ออกกำลังกาย
@@ -323,9 +356,13 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
                 key={ex}
                 type="button"
                 onClick={() => setExerciseMinutes(ex)}
-                className={`px-3 py-1 rounded-xl text-xs font-bold border transition ${
-                  exerciseMinutes === ex ? "bg-orange-400 text-slate-900 border-orange-300 font-black shadow" : "bg-[#191724] text-slate-300 border-[#3D3759]"
-                }`}
+                className="px-3 py-1 rounded-xl text-xs font-bold border transition cursor-pointer"
+                style={{
+                  background: exerciseMinutes === ex ? "#FB923C" : subCardBg,
+                  color: exerciseMinutes === ex ? "#191724" : textM,
+                  borderColor: exerciseMinutes === ex ? "#FB923C" : themeAccent + "30",
+                  fontWeight: exerciseMinutes === ex ? "900" : "600",
+                }}
               >
                 {ex} นาที
               </button>
@@ -344,7 +381,10 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
         </div>
 
         {/* 4. Stress Card */}
-        <div className="p-4 rounded-2xl border space-y-3" style={{ background: "rgba(37,34,56,0.8)", borderColor: "#3D3759" }}>
+        <div
+          className="p-4 rounded-2xl border space-y-3 shadow-sm"
+          style={{ background: cardBg, borderColor: themeAccent + "50" }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-black flex items-center gap-1.5" style={{ color: "#F472B6" }}>
               <span>😰</span> ระดับความเครียด
@@ -360,9 +400,13 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
                 key={st}
                 type="button"
                 onClick={() => setStressLevel(st)}
-                className={`flex-1 py-1.5 rounded-xl text-xs font-bold border transition ${
-                  stressLevel === st ? "bg-pink-400 text-slate-900 border-pink-300 font-black shadow" : "bg-[#191724] text-slate-300 border-[#3D3759]"
-                }`}
+                className="flex-1 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer"
+                style={{
+                  background: stressLevel === st ? "#F472B6" : subCardBg,
+                  color: stressLevel === st ? "#191724" : textM,
+                  borderColor: stressLevel === st ? "#F472B6" : themeAccent + "30",
+                  fontWeight: stressLevel === st ? "900" : "600",
+                }}
               >
                 ระดับ {st}
               </button>
@@ -372,12 +416,17 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
       </div>
 
       {/* Diary & Photo Journal Section */}
-      <div className="p-5 rounded-3xl border space-y-4 shadow-lg" style={{ background: "rgba(25,23,36,0.9)", borderColor: "#3D3759" }}>
+      <div
+        className="p-5 rounded-3xl border space-y-4 shadow-sm"
+        style={{ background: cardBg, borderColor: themeAccent + "50" }}
+      >
         <div className="flex items-center justify-between">
-          <label className="text-xs font-black text-amber-300 flex items-center gap-2">
+          <label className="text-xs font-black flex items-center gap-2" style={{ color: themeAccent }}>
             <span>📖</span> บันทึกไดอารี่ประจำวัน & ภาพถ่ายความประทับใจ
           </label>
-          <span className="text-[11px] text-slate-400 font-medium">บันทึกรูปภาพความทรงจำ</span>
+          <span className="text-[11px] font-medium" style={{ color: textS }}>
+            บันทึกรูปภาพความทรงจำ
+          </span>
         </div>
 
         <textarea
@@ -386,7 +435,11 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
           onChange={(e) => setNote(e.target.value)}
           placeholder="วันนี้มีเรื่องราวดีๆ อะไรอยากเขียนบันทึกไว้บ้างไหม meow~?"
           className="w-full px-4 py-3 rounded-2xl text-xs font-medium resize-none border outline-none transition"
-          style={{ background: "#252238", color: "#F8F6FE", borderColor: "#3D3759" }}
+          style={{
+            background: subCardBg,
+            color: textM,
+            borderColor: themeAccent + "40",
+          }}
         />
 
         {/* Photo Upload Area */}
@@ -401,18 +454,23 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2.5 rounded-2xl text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-400/40 hover:bg-purple-500 hover:text-white transition flex items-center gap-2 shadow"
+            className="px-4 py-2.5 rounded-2xl text-xs font-bold border transition flex items-center gap-2 shadow-sm cursor-pointer"
+            style={{
+              background: subCardBg,
+              color: themeAccent,
+              borderColor: themeAccent + "60",
+            }}
           >
             <span>📷 {photo ? "เปลี่ยนรูปภาพประจำวัน" : "แนบรูปภาพไดอารี่"}</span>
           </button>
 
           {photo && (
-            <div className="relative group rounded-2xl overflow-hidden border border-purple-400/50 shadow-md">
+            <div className="relative group rounded-2xl overflow-hidden border shadow-md" style={{ borderColor: themeAccent }}>
               <img src={photo} alt="Diary attachment" className="w-24 h-24 object-cover" />
               <button
                 type="button"
                 onClick={() => setPhoto(null)}
-                className="absolute top-1 right-1 bg-rose-600 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center shadow hover:scale-110 transition"
+                className="absolute top-1 right-1 bg-rose-600 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center shadow hover:scale-110 transition cursor-pointer"
                 title="ลบรูปภาพ"
               >
                 ✕
@@ -430,9 +488,10 @@ export default function HealthForm({ user, records = [], setActiveTab }) {
           disabled={loading}
           className="flex-1 py-4 rounded-2xl font-black text-slate-900 text-sm flex items-center justify-center gap-2 shadow-xl border-2 transition-all hover:scale-102 active:scale-98 cursor-pointer"
           style={{
-            background: loading ? "#94A3B8" : "#F6D69B",
-            borderColor: "#FDE68A",
-            boxShadow: "0 6px 20px rgba(246,214,155,0.3)",
+            background: loading ? "#94A3B8" : themeAccent,
+            borderColor: themeAccent,
+            color: "#191724",
+            boxShadow: `0 6px 20px ${themeAccent}40`,
           }}
         >
           {loading ? (
