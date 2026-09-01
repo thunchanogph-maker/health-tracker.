@@ -69,8 +69,8 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center justify-center gap-0.5 px-3 py-2 transition-all cursor-pointer ${
-              active ? "bottom-nav-tab-active" : "hover:bg-white/10 rounded-t-2xl pb-2"
+            className={`flex flex-col items-center justify-center gap-0.5 pb-2 px-3 transition-all cursor-pointer ${
+              active ? "bottom-nav-tab-active" : "hover:bg-white/10 rounded-t-2xl pt-2"
             }`}
             style={{
               background: active ? canvasBg : "transparent",
