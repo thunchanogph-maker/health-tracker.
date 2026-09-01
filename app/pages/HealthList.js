@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ref, remove, update } from "firebase/database";
 import { db } from "./firebase";
-import { MoodBadge } from "./page";
+import MoodBadge from "../components/MoodBadge";
 
 // ---- Mood options for edit modal ----
 const MOODS = [
