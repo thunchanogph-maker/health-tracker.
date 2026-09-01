@@ -55,7 +55,7 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-end h-16 px-2 select-none shadow-2xl"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-end h-16 px-2 select-none overflow-visible"
       style={{
         background: navbarBg,
         boxShadow: "0 -6px 25px rgba(0,0,0,0.15)",
@@ -69,8 +69,8 @@ export default function BottomNav({ activeTab, setActiveTab, theme, darkMode }) 
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center justify-center gap-0.5 pt-2 pb-2 px-3 transition-all cursor-pointer ${
-              active ? "bottom-nav-tab-active shadow-lg" : "hover:bg-white/10 rounded-t-2xl"
+            className={`flex flex-col items-center justify-center gap-0.5 px-3 py-2 transition-all cursor-pointer ${
+              active ? "bottom-nav-tab-active" : "hover:bg-white/10 rounded-t-2xl pb-2"
             }`}
             style={{
               background: active ? canvasBg : "transparent",
