@@ -57,7 +57,7 @@ export default function CatCompanionWidget({ user, theme, darkMode }) {
         {/* Cat Mascot Display */}
         <div className="shrink-0 flex flex-col items-center">
           <CatMascot
-            size={110}
+            size={180}
             pose={pose}
             interactive={true}
             speechBubble={showPurr ? "บันทึกแล้ว! ได้รับลูบหัว +1 meow~ 💖" : null}

@@ -96,7 +96,7 @@ export default function OverviewPage({
               ‹
             </button>
             <div className="text-center flex items-center gap-3">
-              <CatMascot size={46} pose="sitting" interactive={true} />
+              <CatMascot size={64} pose="holding-tracker" interactive={true} />
               <div>
                 <div className="font-black text-lg tracking-tight" style={{ color: textM }}>
                   {MN[month]} {year + 543} 🐾
@@ -250,7 +250,7 @@ export default function OverviewPage({
               </div>
             ) : selected ? (
               <div className="flex flex-col items-center py-6 text-center gap-2">
-                <CatMascot size={80} pose="peeking" interactive={true} />
+                <CatMascot size={180} pose="holding-tracker" interactive={true} />
                 <p className="text-xs font-bold mt-2" style={{ color: textS }}>ยังไม่มีบันทึกในวันนี้ meow~</p>
                 <button
                   type="button"
@@ -263,7 +263,7 @@ export default function OverviewPage({
               </div>
             ) : (
               <div className="flex flex-col items-center py-6 text-center gap-2">
-                <CatMascot size={80} pose="stretching" interactive={true} />
+                <CatMascot size={180} pose="holding-tracker" interactive={true} />
                 <p className="text-xs font-bold mt-2" style={{ color: textS }}>
                   แตะเลือกวันในปฏิทินได้เลยครับ meow! 🐾
                 </p>

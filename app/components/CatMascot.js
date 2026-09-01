@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export default function CatMascot({
-  size = 120,
+  size = 150,
   pose = "holding-tracker", // holding-tracker | winking | badge | sitting
   className = "",
   interactive = true,
@@ -36,9 +36,12 @@ export default function CatMascot({
 
   return (
     <div
-      className={`relative inline-flex flex-col items-center select-none cursor-pointer group ${className}`}
+      className={`relative inline-flex flex-col items-center justify-center select-none cursor-pointer group ${className}`}
       onClick={handleClick}
-      style={{ width: size, height: size }}
+      style={{
+        width: typeof size === "number" ? `${size}px` : size,
+        height: "auto",
+      }}
     >
       {/* Floating heart / sparkle animations */}
       {hearts.map((h) => (
@@ -78,7 +81,7 @@ export default function CatMascot({
       <img
         src={imageSrc}
         alt="HealthTrack Mascot & Logo"
-        className={`w-full h-full object-contain transition-transform duration-300 ${
+        className={`w-full h-auto object-contain transition-transform duration-300 drop-shadow-sm ${
           isPatting ? "scale-110 -rotate-3" : "group-hover:scale-105"
         }`}
       />

@@ -68,13 +68,13 @@ export default function Sidebar({ activeTab, setActiveTab, darkMode, theme, user
       }}
     >
       {/* Top Logo Banner */}
-      <div className={`flex items-center mb-8 ${collapsed ? "justify-center px-1" : "justify-between px-3 pr-4"}`}>
+      <div className={`flex items-center mb-6 ${collapsed ? "justify-center px-1" : "justify-between px-2 pr-3"}`}>
         {!collapsed && (
-          <div className="flex items-center gap-3 overflow-hidden">
-            <AppLogo size={140} variant="sticker" />
+          <div className="flex items-center justify-center w-full pr-2">
+            <AppLogo size={190} variant="sticker" />
           </div>
         )}
-        {collapsed && <AppLogo size={34} />}
+        {collapsed && <AppLogo size={46} />}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="w-7 h-7 rounded-xl flex items-center justify-center text-xs hover:opacity-80 shrink-0 transition border shadow-sm cursor-pointer"
@@ -124,8 +124,8 @@ export default function Sidebar({ activeTab, setActiveTab, darkMode, theme, user
 
       {/* Mini Kuro Mascot Widget */}
       {!collapsed && (
-        <div className="mx-3 mr-4 mt-auto p-3 rounded-2xl text-center border shadow-md" style={{ background: "rgba(255,255,255,0.18)", borderColor: "rgba(255,255,255,0.3)", color: "#FFFFFF" }}>
-          <CatMascot size={64} pose="sitting" interactive={true} />
+        <div className="mx-3 mr-4 mt-auto p-3.5 rounded-2xl text-center border shadow-md flex flex-col items-center justify-center" style={{ background: "rgba(255,255,255,0.18)", borderColor: "rgba(255,255,255,0.3)", color: "#FFFFFF" }}>
+          <CatMascot size={120} pose="holding-tracker" interactive={true} />
           <div className="text-xs font-black mt-1">Kuro-chan 🐾</div>
           <div className="text-[10px] font-bold opacity-90">HealthTrack Companion</div>
         </div>

@@ -125,7 +125,7 @@ export default function ProfilePage({
 
       {/* Cat Mascot Friendship Progress Card */}
       <div className="rounded-[28px] p-6 shadow-xl border flex flex-col sm:flex-row items-center gap-5" style={{ background: cardBg, borderColor: borderCol }}>
-        <CatMascot size={100} pose="cheering" interactive={true} />
+        <CatMascot size={180} pose="holding-tracker" interactive={true} />
         <div className="flex-1 text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
             <span className="text-lg">{currentCatLevel.icon}</span>
