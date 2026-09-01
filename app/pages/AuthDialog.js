@@ -5,11 +5,12 @@ import {
   register, login, loginWithGoogle,
   logout, loadAuthState, resetPassword, onAuthChange,
 } from "./Auth";
+import CatMascot from "../components/CatMascot";
 
 export default function AuthDialog({
   onLogin,
   customClass,
-  accentColor  = "#7C3AED",
+  accentColor  = "#F6D69B",
   darkMode     = false,
   defaultView  = "login",   // "login" | "register"
   autoOpen     = false,     // controlled open from parent
@@ -118,19 +119,19 @@ export default function AuthDialog({
   };
 
   // ── Styles ───────────────────────────────────────────────
-  const panelBg    = darkMode ? "#1E1E2E" : "#FFFFFF";
-  const cardBg     = darkMode ? "#2D2D3F" : "#F8FAFC";
-  const borderCol  = darkMode ? "#3D3D4F" : "#E2E8F0";
-  const textMain   = darkMode ? "#F1F5F9" : "#1E293B";
-  const textSub    = darkMode ? "#64748B" : "#94A3B8";
+  const panelBg    = darkMode ? "#252238" : "#FFFFFF";
+  const cardBg     = darkMode ? "#191724" : "#FFF8ED";
+  const borderCol  = darkMode ? "#3D3759" : "#F6D69B";
+  const textMain   = darkMode ? "#F8F6FE" : "#1E293B";
+  const textSub    = darkMode ? "#B2ACCD" : "#64748B";
 
   const inputStyle = {
-    background:   darkMode ? "#2D2D3F" : "#F8FAFC",
-    borderColor:  darkMode ? "#3D3D4F" : "#E2E8F0",
-    color:        darkMode ? "#F1F5F9" : "#1E293B",
+    background:   darkMode ? "#191724" : "#FFF8ED",
+    borderColor:  borderCol,
+    color:        darkMode ? "#F8F6FE" : "#1E293B",
     borderWidth:  2,
     borderStyle:  "solid",
-    borderRadius: 12,
+    borderRadius: 16,
     padding:      "12px 16px",
     width:        "100%",
     fontSize:     14,
@@ -140,9 +141,9 @@ export default function AuthDialog({
   };
   const labelStyle = {
     display:      "block",
-    color:        darkMode ? "#94A3B8" : "#64748B",
+    color:        textSub,
     fontSize:     12,
-    fontWeight:   600,
+    fontWeight:   700,
     marginBottom: 6,
   };
 
@@ -154,19 +155,19 @@ export default function AuthDialog({
         hideTriggerWhenLoggedOut ? null : (
           <button
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 hover:scale-105"
-            style={{ background: accentColor, boxShadow: `0 4px 14px ${accentColor}50` }}
+            className="flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-black text-slate-900 transition-all hover:scale-105 shadow-md border"
+            style={{ background: accentColor, borderColor: borderCol }}
           >
-            🔐 Sign in
+            🔐 Sign in meow~
           </button>
         )
       ) : (
         <button
           onClick={handleLogout}
-          className="text-sm font-semibold px-3 py-1.5 rounded-xl border transition hover:opacity-80"
+          className="text-xs font-bold px-3 py-1.5 rounded-xl border transition hover:opacity-80"
           style={{ borderColor: borderCol, color: textSub }}
         >
-          ออกจากระบบ
+          ออกจากระบบ 🐾
         </button>
       )}
 
@@ -174,32 +175,25 @@ export default function AuthDialog({
       {isOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(8px)" }}
+          style={{ background: "rgba(10,8,18,0.75)", backdropFilter: "blur(10px)" }}
           onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
         >
           <div
-            className="w-full max-w-md rounded-3xl overflow-hidden shadow-2xl relative"
-            style={{ background: panelBg, maxHeight: "95vh", overflowY: "auto" }}
+            className="w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl relative border"
+            style={{ background: panelBg, borderColor: borderCol, maxHeight: "95vh", overflowY: "auto" }}
           >
-            {/* Accent strip */}
-            <div className="absolute left-0 top-0 bottom-0 w-1.5"
-              style={{ background: `linear-gradient(180deg,${accentColor},${accentColor}60)` }} />
-
-            {/* Header */}
-            <div className="px-8 pt-8 pb-0">
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-4"
-                style={{ background: `${accentColor}20` }}>
-                {view === "login" ? "🔐" : view === "register" ? "🌱" : "📧"}
-              </div>
-              <h2 className="text-2xl font-black mb-1" style={{ color: textMain }}>
-                {view === "login"    ? "ยินดีต้อนรับกลับ"     :
-                 view === "register" ? "สร้างบัญชีใหม่"        :
+            {/* Header with Peeking Mascot */}
+            <div className="px-8 pt-8 pb-0 text-center flex flex-col items-center">
+              <CatMascot size={90} pose="peeking" interactive={true} speechBubble="เข้าสู่ระบบ meow! 🐾" />
+              <h2 className="text-2xl font-black mb-1 mt-2 tracking-tight" style={{ color: textMain }}>
+                {view === "login"    ? "ยินดีต้อนรับกลับมา!"     :
+                 view === "register" ? "สร้างบัญชีทาสแมวใหม่"    :
                                       "รีเซ็ตรหัสผ่าน"}
               </h2>
-              <p className="text-sm mb-5" style={{ color: textSub }}>
-                {view === "login"    ? "เข้าสู่ระบบเพื่อใช้งาน HealthTrack"  :
-                 view === "register" ? "เริ่มติดตามสุขภาพของคุณวันนี้"         :
-                                      "กรอกอีเมลเพื่อรับลิงก์รีเซ็ต"}
+              <p className="text-xs font-medium mb-4" style={{ color: textSub }}>
+                {view === "login"    ? "เข้าสู่ระบบเพื่อให้น้อง Kuro ดูแลสุขภาพคุณ"  :
+                 view === "register" ? "เริ่มติดตามสุขภาพของคุณร่วมกับน้องแมววันนี้" :
+                                      "กรอกอีเมลเพื่อรับลิงก์รีเซ็ตรหัสผ่าน"}
               </p>
 
               {/* Tab: login / register */}

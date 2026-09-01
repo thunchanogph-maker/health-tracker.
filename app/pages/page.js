@@ -25,7 +25,7 @@ export default function HealthPage() {
   const [periodRecords, setPeriodRecords] = useState([]);
   const [bmiRecord, setBmiRecord] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [theme, setTheme] = useState(THEMES[0]);
   const [showSettings, setShowSettings] = useState(false);
   const [showPeriod, setShowPeriod] = useState(false);
@@ -73,7 +73,9 @@ export default function HealthPage() {
     const t = localStorage.getItem("htrack-theme");
     const p = localStorage.getItem("htrack-period");
     const b = localStorage.getItem("htrack-bmi");
-    if (d === "1") setDarkMode(true);
+    if (d === "0") setDarkMode(false);
+    else setDarkMode(true);
+
     if (t) {
       const found = THEMES.find((x) => x.name === t);
       if (found) setTheme(found);
@@ -95,7 +97,7 @@ export default function HealthPage() {
     localStorage.setItem("htrack-bmi", showBmiFeature ? "1" : "0");
   }, [showBmiFeature]);
 
-  const bg = darkMode ? "#0F0F1A" : "#F1F5F9";
+  const bg = darkMode ? "#191724" : "#FFF8ED";
   const openAuth = (view) => {
     setAuthView(view);
     setAuthKey((k) => k + 1);

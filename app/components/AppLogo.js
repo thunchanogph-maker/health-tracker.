@@ -12,33 +12,55 @@ export default function AppLogo({ size = 36, className = "" }) {
       style={{ display: "inline-block", verticalAlign: "middle" }}
     >
       <defs>
-        <linearGradient id="htLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#10B981" />
-          <stop offset="100%" stopColor="#059669" />
+        <linearGradient id="kuroLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#2D2845" />
+          <stop offset="100%" stopColor="#191724" />
         </linearGradient>
+        <radialGradient id="kuroEyeShine" cx="30%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#E2E8F0" />
+        </radialGradient>
       </defs>
-      
-      {/* Background Rounded Shield */}
-      <rect width="100" height="100" rx="26" fill="url(#htLogoGradient)" />
-      
-      {/* Heart Shape Silhouette */}
+
+      {/* Rounded Background Card with Cat Ear Silhouette */}
+      <rect width="100" height="100" rx="26" fill="url(#kuroLogoGrad)" stroke="#F6D69B" strokeWidth="2.5" />
+
+      {/* Cat Ears Top Cutouts */}
+      <path d="M 28 28 L 18 8 L 42 18 Z" fill="#2D2845" stroke="#F6D69B" strokeWidth="2" />
+      <path d="M 30 26 L 22 14 L 40 20 Z" fill="#FFA4B8" />
+      <path d="M 72 28 L 82 8 L 58 18 Z" fill="#2D2845" stroke="#F6D69B" strokeWidth="2" />
+      <path d="M 70 26 L 78 14 L 60 20 Z" fill="#FFA4B8" />
+
+      {/* Heart Health Emblem in Center */}
       <path
-        d="M50 80 C26 62 16 48 16 33 C16 21 25 14 36 14 C43 14 48 18 50 22 C52 18 57 14 64 14 C75 14 84 21 84 33 C84 48 74 62 50 80 Z"
-        fill="white"
-        fillOpacity="0.25"
+        d="M 50 78 C 30 62 20 48 20 34 C 20 22 29 16 40 16 C 46 16 50 20 50 22 C 50 20 54 16 60 16 C 71 16 80 22 80 34 C 80 48 70 62 50 78 Z"
+        fill="#F6D69B"
+        opacity="0.25"
       />
-      
-      {/* ECG / Heartbeat Line */}
+
+      {/* Cute Big White Eyes */}
+      <circle cx="36" cy="48" r="9" fill="url(#kuroEyeShine)" />
+      <circle cx="38" cy="46" r="4" fill="#191724" />
+      <circle cx="35" cy="44" r="2.5" fill="#FFFFFF" />
+
+      <circle cx="64" cy="48" r="9" fill="url(#kuroEyeShine)" />
+      <circle cx="66" cy="46" r="4" fill="#191724" />
+      <circle cx="63" cy="44" r="2.5" fill="#FFFFFF" />
+
+      {/* Cute Pink Cheeks */}
+      <circle cx="28" cy="56" r="4" fill="#FFA4B8" opacity="0.8" />
+      <circle cx="72" cy="56" r="4" fill="#FFA4B8" opacity="0.8" />
+
+      {/* Nose & Heart ECG Line */}
+      <polygon points="48,54 52,54 50,57" fill="#FFA4B8" />
+
       <path
-        d="M20 50 L33 50 L39 34 L47 66 L55 26 L62 58 L68 50 L80 50"
-        stroke="white"
-        strokeWidth="6"
+        d="M 24 72 L 36 72 L 42 60 L 50 82 L 58 52 L 64 76 L 70 72 L 76 72"
+        stroke="#F6D69B"
+        strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      
-      {/* Glowing Star / Dot */}
-      <circle cx="80" cy="50" r="4" fill="#FDE047" />
     </svg>
   );
 }

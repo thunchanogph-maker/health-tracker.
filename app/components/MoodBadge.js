@@ -2,17 +2,18 @@
 
 export function MoodBadge({ mood, size = "md" }) {
   const map = {
-    great: { emoji: "😄", label: "Great", cls: "bg-green-100 text-green-700 border-green-300" },
-    good:  { emoji: "😊", label: "Good",  cls: "bg-blue-100 text-blue-700 border-blue-300" },
-    okay:  { emoji: "😐", label: "Okay",  cls: "bg-yellow-100 text-yellow-700 border-yellow-300" },
-    bad:   { emoji: "😢", label: "Bad",   cls: "bg-orange-100 text-orange-700 border-orange-300" },
-    awful: { emoji: "😭", label: "Awful", cls: "bg-red-100 text-red-700 border-red-300" },
+    great: { emoji: "😸", label: "สดใสมาก", cls: "bg-emerald-500/15 text-emerald-400 border-emerald-500/40" },
+    good:  { emoji: "😺", label: "อารมณ์ดี",  cls: "bg-sky-500/15 text-sky-400 border-sky-500/40" },
+    okay:  { emoji: "😐", label: "เฉยๆ meow", cls: "bg-amber-500/15 text-amber-400 border-amber-500/40" },
+    bad:   { emoji: "😿", label: "อารมณ์ไม่ดี", cls: "bg-orange-500/15 text-orange-400 border-orange-500/40" },
+    awful: { emoji: "😾", label: "แย่จัง meow", cls: "bg-rose-500/15 text-rose-400 border-rose-500/40" },
   };
   const m = map[mood] || map.okay;
-  const sz = size === "lg" ? "px-4 py-2 text-base" : "px-3 py-1 text-sm";
+  const sz = size === "lg" ? "px-4 py-1.5 text-sm" : "px-3 py-1 text-xs";
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border font-semibold ${m.cls} ${sz}`}>
-      {m.emoji} {m.label}
+    <span className={`inline-flex items-center gap-1.5 rounded-full border-2 font-black tracking-tight ${m.cls} ${sz}`}>
+      <span>{m.emoji}</span>
+      <span>{m.label}</span>
     </span>
   );
 }
